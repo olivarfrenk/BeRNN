@@ -8,8 +8,12 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict, defaultdict
 import numpy as np
 
-participantList = ['beRNN_05']
-# participantList = ['beRNN_01','beRNN_02','beRNN_03','beRNN_04','beRNN_05']
+# participantList = ['beRNN_05']
+participantList = ['beRNN_01','beRNN_02','beRNN_03','beRNN_04','beRNN_05']
+
+clustering_std_list = []
+modularity_std_list = []
+participation_std_list = []
 
 for participant in participantList:
     # Calculate one plot for each participant with all three top markers as mean and variance over time
@@ -133,72 +137,79 @@ for participant in participantList:
     )
     plt.tight_layout()
 
-    save_path = os.path.join(save_fig, f'topMarker_overTime_{participant}_{data}.png')
+    save_path = os.path.join(save_fig, f'topMarker_overTime_{participant}_{data}.pdf')
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
 
     plt.show()
 
 
-# info. Check for standard deviations in topological markers over complete training procedure **************************
-import itertools
-clusteringList = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
-        [stacked_y['averageg_clustering'][markerLists] for markerLists in stacked_y['averageg_clustering']]))))
-print('Clustering std: ', np.std(clusteringList))
+    # info. Check for standard deviations in topological markers over complete training procedure **************************
+    import itertools
+    clusteringList = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
+            [stacked_y['averageg_clustering'][markerLists] for markerLists in stacked_y['averageg_clustering']]))))
+    print('Clustering std: ', np.std(clusteringList))
+    clustering_std_list.append(np.std(clusteringList))
 
-modularity_sparse = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
-        [stacked_y['modularity_sparse'][markerLists] for markerLists in stacked_y['modularity_sparse']]))))
-print('Modularity std: ', np.std(modularity_sparse))
+    modularity_sparse = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
+            [stacked_y['modularity_sparse'][markerLists] for markerLists in stacked_y['modularity_sparse']]))))
+    print('Modularity std: ', np.std(modularity_sparse))
+    modularity_std_list.append(np.std(modularity_sparse))
 
-average_participation = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
-        [stacked_y['average_participation'][markerLists] for markerLists in stacked_y['average_participation']]))))
-print('Particpation std: ', np.std(average_participation))
+    average_participation = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
+            [stacked_y['average_participation'][markerLists] for markerLists in stacked_y['average_participation']]))))
+    print('Particpation std: ', np.std(average_participation))
+    participation_std_list.append(np.std(average_participation))
 
-performance = list(itertools.chain.from_iterable(
-    [data_by_month_and_model[month_key][model]['perf_avg'] for month_key in data_by_month_and_model
-     for model in data_by_month_and_model[month_key]]))
-print('Performance std: ', np.std(performance))
-print('Performance mean: ', np.mean(performance))
+    performance = list(itertools.chain.from_iterable(
+        [data_by_month_and_model[month_key][model]['perf_avg'] for month_key in data_by_month_and_model
+         for model in data_by_month_and_model[month_key]]))
+    print('Performance std: ', np.std(performance))
+    print('Performance mean: ', np.mean(performance))
 
-
-# info. Create structure for the LMM analysis **************************************************************************
-import pandas as pd
-
-list_clust = [stacked_y['averageg_clustering'][markerLists] for markerLists in stacked_y['averageg_clustering']]
-list_modularity = [stacked_y['modularity_sparse'][markerLists] for markerLists in stacked_y['modularity_sparse']]
-list_participation = [stacked_y['average_participation'][markerLists] for markerLists in stacked_y['average_participation']]
-
-if participant == 'beRNN_04':
-    months = [f"Month_{i}" for i in range(1, 8)]  # 1 to 7
-else:
-    months = [f"Month_{i}" for i in range(1, 13)]  # 1 to 12
-
-rows = []
-
-for m_idx, month_name in enumerate(months):
-    for model_idx in range(20): # number of models
-        unique_model_id = f"{participant}_{month_name}_Model_{model_idx + 1}"
-
-        for step_idx in range(27): # number of validation steps per month
-            m1_val = list_clust[m_idx][model_idx][step_idx]
-            m2_val = list_modularity[m_idx][model_idx][step_idx]
-            m3_val = list_participation[m_idx][model_idx][step_idx]
-
-            # Append a flat row
-            rows.append({
-                "Subject": participant,
-                "Month": month_name,
-                "Model_ID": unique_model_id,
-                "Validation_Step": step_idx + 1,  # 1-indexed step tracking
-                "Marker_1": m1_val,
-                "Marker_2": m2_val,
-                "Marker_3": m3_val
-            })
+print('Clustering std mean', np.mean(clustering_std_list))
+print('Modularity std mean', np.mean(modularity_std_list))
+print('Participation std mean', np.mean(participation_std_list))
 
 
-subj_df = pd.DataFrame(rows)
-
-file_name = f"trajectory_data_{participant}_{data}.csv"
-subj_df.to_csv(file_name, index=False)
-print(f"Saved: {file_name}")
+# # info. Create structure for the LMM analysis **************************************************************************
+# import pandas as pd
+#
+# list_clust = [stacked_y['averageg_clustering'][markerLists] for markerLists in stacked_y['averageg_clustering']]
+# list_modularity = [stacked_y['modularity_sparse'][markerLists] for markerLists in stacked_y['modularity_sparse']]
+# list_participation = [stacked_y['average_participation'][markerLists] for markerLists in stacked_y['average_participation']]
+#
+# if participant == 'beRNN_04':
+#     months = [f"Month_{i}" for i in range(1, 8)]  # 1 to 7
+# else:
+#     months = [f"Month_{i}" for i in range(1, 13)]  # 1 to 12
+#
+# rows = []
+#
+# for m_idx, month_name in enumerate(months):
+#     for model_idx in range(20): # number of models
+#         unique_model_id = f"{participant}_{month_name}_Model_{model_idx + 1}"
+#
+#         for step_idx in range(27): # number of validation steps per month
+#             m1_val = list_clust[m_idx][model_idx][step_idx]
+#             m2_val = list_modularity[m_idx][model_idx][step_idx]
+#             m3_val = list_participation[m_idx][model_idx][step_idx]
+#
+#             # Append a flat row
+#             rows.append({
+#                 "Subject": participant,
+#                 "Month": month_name,
+#                 "Model_ID": unique_model_id,
+#                 "Validation_Step": step_idx + 1,  # 1-indexed step tracking
+#                 "Marker_1": m1_val,
+#                 "Marker_2": m2_val,
+#                 "Marker_3": m3_val
+#             })
+#
+#
+# subj_df = pd.DataFrame(rows)
+#
+# file_name = f"trajectory_data_{participant}_{data}.csv"
+# subj_df.to_csv(file_name, index=False)
+# print(f"Saved: {file_name}")
 
 

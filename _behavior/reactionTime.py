@@ -15,9 +15,9 @@ months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
 # months = ['1', '2', '3', '4', '5', '6', '7']
 # months = ['3', '4', '5']
 strToSave = months[0] + '-' + months[-1]
-newParticpantList = ['beRNN_01']
+newParticpantList = ['beRNN_05']
 # newParticpantList = ['beRNN_04']
-reactionTime_comparison, plot_radars, wholePeriodPlots = False, True, False
+reactionTime_comparison, plot_radars, wholePeriodPlots = True, False, False
 
 paper_nomenclatur_dict = {
     'beRNN_03': 'HC1',
@@ -332,17 +332,17 @@ if reactionTime_comparison == True:
 
         fig_correct.savefig(
             os.path.join(participant_dir, participant,
-                         f"{participant}_{strToSave}_reactionTime_Corrects.png"),
+                         f"{participant}_{strToSave}_reactionTime_Corrects.pdf"),
             dpi=300
         )
         fig_error.savefig(
             os.path.join(participant_dir, participant,
-                         f"{participant}_{strToSave}_reactionTime_Errors.png"),
+                         f"{participant}_{strToSave}_reactionTime_Errors.pdf"),
             dpi=300
         )
         fig_all.savefig(
             os.path.join(participant_dir, participant,
-                         f"{participant}_{strToSave}_reactionTime_All.png"),
+                         f"{participant}_{strToSave}_reactionTime_All.pdf"),
             dpi=300
         )
 
@@ -480,12 +480,12 @@ if reactionTime_comparison == True:
             pad=20
         )
 
-        # Save alongside other PNGs
+        # Save alongside other PDFs
         fig_stats.savefig(
             os.path.join(
                 participant_dir,
                 participant,
-                f"{participant}_{strToSave}_reactionTime_Statistics.png"
+                f"{participant}_{strToSave}_reactionTime_Statistics.pdf"
             ),
             dpi=300,
             bbox_inches="tight"
@@ -514,10 +514,8 @@ def plot_beRNN_radar_months(beRNN_name, data, filename_color_dict, months):
     angles = np.linspace(0, 2 * np.pi, n_tasks, endpoint=False)
     angles = np.concatenate([angles, [angles[0]]])  # close the polygon
 
-    # Geändert zu 3 Zeilen und 4 Spalten. Figsize angepasst für quadratischere Subplots.
     fig, axes = plt.subplots(3, 4, figsize=(20, 15), subplot_kw=dict(polar=True))
 
-    # .flatten() macht aus der 3x4 Matrix ein 1D-Array mit 12 Elementen für das zip
     for ax, month in zip(axes.flatten(), months):
         values = np.array(data[month])
         values = np.concatenate([values, [values[0]]])  # close polygon
@@ -544,21 +542,19 @@ def plot_beRNN_radar_months(beRNN_name, data, filename_color_dict, months):
         ax.set_yticklabels([])  # remove y-ticks
         ax.set_xticklabels([])  # remove y-ticks
         # ax.set_yticklabels([str(i) for i in range(1, 7)], fontsize=8)
-        ax.set_title(f"Month {month}", fontsize=36, y=-0.1)
+        # ax.set_title(f"Month {month}", fontsize=36, y=-0.1)
 
-    # Blendet ungenutzte Subplots aus, falls weniger als 12 Monate übergeben wurden
     if len(months) < 12:
         for ax in axes.flatten()[len(months) :]:
             ax.axis("off")
 
     # fig.suptitle(paper_nomenclatur_dict[beRNN_name], fontsize=24)
-    plt.tight_layout()  # Aktiviert, um Überlappungen im Grid zu verhindern
+    plt.tight_layout()
 
-    # Hinweis: Stellen Sie sicher, dass 'strToSave' in Ihrer echten Funktion definiert ist
     plt.savefig(
         os.path.join(
             r"C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__taskComplexities",
-            f"{beRNN_name}_taskComplexity_month_{strToSave}.png",
+            f"{beRNN_name}_taskComplexity_month_{strToSave}.pdf",
         ),
         dpi=300,
     )

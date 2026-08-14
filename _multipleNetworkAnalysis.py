@@ -42,7 +42,7 @@ Both data modalities have to be preprocessed with:
 # head - Variables and functions #######################################################################################
 ########################################################################################################################
 setup = {
-    'comparison': ['correlation', 'rsa', None][2],
+    'comparison': ['correlation', 'rsa', None][1],
     'modalityWithin_comparison': ['brain', 'beRNN', 'standard'][1], # standard is beRNN brain comparison - 'brain': brain/brain - 'beRNN': beRNN/beRNN
     # 'numberOfModels': [5, 3], # second value represents beRNN_04 - only defined for beRNNs - should be 3 if compared to brain in 'standard' - [5, 3] or [20, 20]
     'numberOfModels': [20, 20], # second value represents beRNN_04 - only defined for beRNNs - should be 3 if compared to brain in 'standard' - [5, 3] or [20, 20]
@@ -56,8 +56,8 @@ setup = {
     # 'paper_nomenclatur': ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ', 'ALL'], # nomenclatur for paper plots - only applied for RDA
     'participants': ['sub-6IECX', 'sub-DKHPB', 'sub-KPB84', 'sub-YL4AS', 'sub-96WID'], # nomenclatur for paper plots - only applied for RDA
     'participants_snip': ['sub-SNIP6IECX', 'sub-SNIPDKHPB', 'sub-SNIPKPB84', 'sub-SNIPYL4AS', 'sub-SNIP96WID'], # nomenclatur for paper plots - only applied for RDA
-    'folder_beRNN': fr'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__baseline\compare_4task_beRNN_01_highDim_128_hp8', # beRNN_01 is default
-    'robust_compare': True, # false if 1,3,6,9,12 comparison
+    'folder_beRNN': fr'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\robust_multi_beRNN_01_highDim_correctOnly_256_hp_8', # beRNN_01 is default - add __baseline as folder for proof of concept
+    'robust_compare': True, # false if 1,3,6,9,12 brain comparison
     'folder_brain': r'W:\group_csp\analyses\oliver.frank\_brainModels',
     'subNetwork_string': 'Default_contrast',
     'folder_topologicalMarker_pValue_lists': r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__topologicalMarker_pValue_lists',
@@ -961,7 +961,7 @@ elif setup['comparison'] == 'rsa':
     )
 
     os.makedirs(setup['rsa_directory'], exist_ok=True)
-    plt.savefig(os.path.join(setup['rsa_directory'], rf'RDAmatrix-{os.path.basename(setup["folder_beRNN"])}-{setup["modalityWithin_comparison"]}-{setup["subNetwork_string"]}.png'), bbox_inches='tight', dpi=300)
+    plt.savefig(os.path.join(setup['rsa_directory'], rf'RDAmatrix-{os.path.basename(setup["folder_beRNN"])}-{setup["modalityWithin_comparison"]}-{setup["subNetwork_string"]}.pdf'), bbox_inches='tight', dpi=300)
 
     plt.show()
 
@@ -1140,7 +1140,7 @@ if setup["correlationOf_correlationMatices_fMRI"] == True:
     )
 
     plt.savefig(
-        r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__correlationPlots\correlation_plot_BNN.png',
+        r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__correlationPlots\correlation_plot_BNN.pdf',
         bbox_inches='tight',
         dpi=300
     )
@@ -1290,7 +1290,7 @@ if setup["correlationOf_correlationMatices_beRNN"] == True:
     )
 
     plt.savefig(
-        r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__correlationPlots\correlation_plot_RNN.png',
+        r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__correlationPlots\correlation_plot_RNN.pdf',
         bbox_inches='tight',
         dpi=300
     )
@@ -1450,7 +1450,7 @@ if setup["plotTopMarkerOverDensities"] == True:
 
         saveDirectory = os.path.join(directory, plot_folder)
         os.makedirs(saveDirectory, exist_ok=True)
-        plt.savefig(os.path.join(saveDirectory, f'topologicalMarker_density_{density}.png'))
+        plt.savefig(os.path.join(saveDirectory, f'topologicalMarker_density_{density}.pdf'))
 
         plt.show()
 

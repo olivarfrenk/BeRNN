@@ -463,10 +463,10 @@ from tools import rule_name
 # info: Plot performance over defined period as boxplots
 # info: ###############################################################################################################
 participant_dir = r'W:\group_csp\analyses\oliver.frank\Data'
-# months = ['3', '4', '5']
-months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+months = ['1', '2', '3', '4', '5', '6', '7']
+# months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
 strToSave = months[0] + '-' + months[-1]
-newParticpantList = ['beRNN_03']
+newParticpantList = ['beRNN_04']
 task_keys = [
     'DM', 'DM_Anti',
     'EF', 'EF_Anti',
@@ -575,7 +575,7 @@ for participant in newParticpantList:
     ax.set_xlim(month_centers[0] - 0.5, month_centers[-1] + 0.5)
 
     plt.tight_layout()
-    figure_path = os.path.join(participant_dir, participant, f"{participant}_{strToSave}_SideBySide.png")
+    figure_path = os.path.join(participant_dir, participant, f"{participant}_{strToSave}_SideBySide.pdf")
     plt.savefig(figure_path, bbox_inches='tight', dpi=300)
     plt.show()
 

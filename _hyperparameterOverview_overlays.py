@@ -255,7 +255,7 @@ def general_hp_plot_overlay_multiple(meta_n_clusters_list,
 
     # === Save ===
     save_path = os.path.join(directory, 'visuals_overlay',
-                             f'overlay_multi_density_{density}_{"-".join(folder_labels[0].split("_")[:-1])}_{sort_variable}_{mode}.png')
+                             f'overlay_multi_density_{density}_{"-".join(folder_labels[0].split("_")[:-1])}_{sort_variable}_{mode}.pdf')
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.savefig(save_path, bbox_inches='tight', dpi=300)
     plt.show()
@@ -438,7 +438,7 @@ def general_hp_plot_overlay_multiple_robustnessTests(meta_n_clusters_list,
 
     # === Save ===
     save_path = os.path.join(directory, 'visuals_overlay_robustness',
-                             f'overlay_multi_density_{density}_{"-".join(folder_labels[0].split("_")[1:-1])}_{sort_variable}_{mode}.png')
+                             f'overlay_multi_density_{density}_{"-".join(folder_labels[0].split("_")[1:-1])}_{sort_variable}_{mode}.pdf')
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.savefig(save_path, bbox_inches='tight', dpi=300)
     plt.show()
@@ -521,7 +521,7 @@ def visualize_topMarker_testPerf_corrlation(meta_perf_test_list, meta_topMarker_
     # Layout and save
     fig.tight_layout()
     fig.savefig(
-        fr"{directory_metaOverlayVisual}\visuals_overlay\correlation_testPerformance_{topMarker_name}_{'_'.join(foldersToOverlay[-1].split('_')[:-1])}.png",
+        fr"{directory_metaOverlayVisual}\visuals_overlay\correlation_testPerformance_{topMarker_name}_{'_'.join(foldersToOverlay[-1].split('_')[:-1])}.pdf",
         dpi=300,
         bbox_inches="tight"
     )
@@ -637,16 +637,16 @@ if __name__ == '__main__':
     #                     '_gridSearch_domainTask-DM_beRNN_03_highDim_correctOnly_256',
     #                     '_gridSearch_domainTask_DM_beRNN_03_highDim_correctOnly_512']
 
-    foldersToOverlay = ['show-grid_multi_beRNN_03_highDim_correctOnly_16',
-                  'show-grid_multi_beRNN_03_highDim_correctOnly_32',
-                  'show-grid_multi_beRNN_03_highDim_correctOnly_64',
-                  'show-grid_multi_beRNN_03_highDim_correctOnly_128',
-                  'show-grid_multi_beRNN_03_highDim_correctOnly_256',
-                  'show-grid_multi_beRNN_03_highDim_correctOnly_512']
+    foldersToOverlay = ['show-lowC_multi_beRNN_00_highDim_lowCognition_16',
+                  'show-lowC_multi_beRNN_00_highDim_lowCognition_32',
+                  'show-lowC_multi_beRNN_00_highDim_lowCognition_64',
+                  'show-lowC_multi_beRNN_00_highDim_lowCognition_128',
+                  'show-lowC_multi_beRNN_00_highDim_lowCognition_256',
+                  'show-lowC_multi_beRNN_00_highDim_lowCognition_512']
 
     paper_nomenclatur_dict = ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ']
     participantList = ['beRNN_00', 'beRNN_01', 'beRNN_02', 'beRNN_03', 'beRNN_04', 'beRNN_05']
-    participantNumber = 3 # for standard visualization beRNN_03
+    participantNumber = 0 # for standard visualization beRNN_03
     network_sizes = ['16', '32', '64', '128', '256', '512']  # for standard visualization
 
     mode = ['train', 'test'][1]
@@ -948,8 +948,10 @@ if overlay == 'robustness':
 # import numpy as np
 #
 # months = ['month_3', 'month_4', 'month_5']
-# base_dir = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_256\highDim\beRNN_03\8\beRNN_03_AllTask_3-5_data_highDim_tB8_iter5_LeakyRNN_256_relu'
-# save_fig = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_256\highDim\beRNN_03\visuals\performance_test\batchPlots\1\8'
+# # base_dir = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_256\highDim\beRNN_03\8\beRNN_03_AllTask_3-5_data_highDim_tB8_iter5_LeakyRNN_256_relu'
+# # save_fig = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_256\highDim\beRNN_03\visuals\performance_test\batchPlots\1\8'
+# base_dir = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_correctOnly_256\highDim_correctOnly\beRNN_03\4\beRNN_03_AllTask_3-5_data_highDim_correctOnly_tB4_iter1_LeakyRNN_256_relu'
+# save_fig = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_correctOnly_256\highDim_correctOnly\beRNN_03\visuals\performance_test\batchPlots\1\4'
 # os.makedirs(save_fig, exist_ok=True)
 #
 # perfList = [
@@ -1000,7 +1002,7 @@ if overlay == 'robustness':
 #     label_name = perf.replace('perf_train_', '')
 #
 #     # Plot the full stitched trajectory
-#     ax.plot(downsampled_x, downsampled_y, label=label_name, color=colors[i], linewidth=2.5, alpha=0.8)
+#     ax.plot(downsampled_x, downsampled_y, label=label_name, color=colors[i], linewidth=2, alpha=0.8)
 #
 # # Add visual dividers
 # if month_lengths:
@@ -1026,7 +1028,7 @@ if overlay == 'robustness':
 # plt.tight_layout()
 # plt.show()
 #
-# save_path = os.path.join(save_fig, 'perf_train_overTime.png')
+# save_path = os.path.join(save_fig, 'perf_train_overTime.pdf')
 # fig.savefig(save_path, dpi=300, bbox_inches='tight')
 #
 #
@@ -1081,7 +1083,7 @@ if overlay == 'robustness':
 #     label_name = perf.replace('perf_', '')
 #
 #     # Plot the full stitched trajectory
-#     ax.plot(downsampled_x, downsampled_y, label=label_name, color=colors[i], linewidth=2.5, alpha=0.8)
+#     ax.plot(downsampled_x, downsampled_y, label=label_name, color=colors[i], linewidth=2, alpha=0.8)
 #
 # # Add visual dividers
 # if month_lengths:
@@ -1107,7 +1109,7 @@ if overlay == 'robustness':
 # plt.tight_layout()
 # plt.show()
 #
-# save_path = os.path.join(save_fig, 'perf_test_overTime.png')
+# save_path = os.path.join(save_fig, 'perf_test_overTime.pdf')
 # fig.savefig(save_path, dpi=300, bbox_inches='tight')
 
 
