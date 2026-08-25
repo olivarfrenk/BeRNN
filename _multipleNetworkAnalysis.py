@@ -47,16 +47,16 @@ setup = {
     # 'numberOfModels': [5, 3], # second value represents beRNN_04 - only defined for beRNNs - should be 3 if compared to brain in 'standard' - [5, 3] or [20, 20]
     'numberOfModels': [20, 20], # second value represents beRNN_04 - only defined for beRNNs - should be 3 if compared to brain in 'standard' - [5, 3] or [20, 20]
     'threshold': 0.1,
-    'participants_beRNN': ['beRNN_03', 'beRNN_04', 'beRNN_01', 'beRNN_02', 'beRNN_05'], # order for paper - with 'beRNN_06' for ALL comparison
+    # 'participants_beRNN': ['beRNN_03', 'beRNN_04', 'beRNN_01', 'beRNN_02', 'beRNN_05'], # order for paper - with 'beRNN_06' for ALL comparison
     # 'participants_beRNN': ['beRNN_03', 'beRNN_08'], # baseline comparison w. shared (00) and random (06)
-    # 'participants_beRNN': ['beRNN_03', 'beRNN_00', 'beRNN_06', 'beRNN_07', 'beRNN_08'], # baseline comparison w. shared (00) and random (06)
-    'paper_nomenclatur': ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ'], # nomenclatur for paper plots - only applied for RDA
+    'participants_beRNN': ['beRNN_03', 'beRNN_00', 'beRNN_06', 'beRNN_07', 'beRNN_08'], # baseline comparison w. shared (00) and random (06)
+    # 'paper_nomenclatur': ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ'], # nomenclatur for paper plots - only applied for RDA
     # 'paper_nomenclatur': ['HC1', 'NRE'], # nomenclatur for paper plots - only applied for RDA
-    # 'paper_nomenclatur': ['HC1', 'POL', 'RND', 'LIN', 'NRE'], # nomenclatur for paper plots - only applied for RDA
+    'paper_nomenclatur': ['HC1', 'POL', 'RND', 'LIN', 'NRE'], # nomenclatur for paper plots - only applied for RDA
     # 'paper_nomenclatur': ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ', 'ALL'], # nomenclatur for paper plots - only applied for RDA
     'participants': ['sub-6IECX', 'sub-DKHPB', 'sub-KPB84', 'sub-YL4AS', 'sub-96WID'], # nomenclatur for paper plots - only applied for RDA
     'participants_snip': ['sub-SNIP6IECX', 'sub-SNIPDKHPB', 'sub-SNIPKPB84', 'sub-SNIPYL4AS', 'sub-SNIP96WID'], # nomenclatur for paper plots - only applied for RDA
-    'folder_beRNN': fr'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\robust_multi_beRNN_01_highDim_correctOnly_256_hp_8', # beRNN_01 is default - add __baseline as folder for proof of concept
+    'folder_beRNN': fr'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__baseline\robust_multi_beRNN_01_highDim_256_hp_8', # beRNN_01 is default - add __baseline as folder for proof of concept
     'robust_compare': True, # false if 1,3,6,9,12 brain comparison
     'folder_brain': r'W:\group_csp\analyses\oliver.frank\_brainModels',
     'subNetwork_string': 'Default_contrast',
@@ -961,7 +961,7 @@ elif setup['comparison'] == 'rsa':
     )
 
     os.makedirs(setup['rsa_directory'], exist_ok=True)
-    plt.savefig(os.path.join(setup['rsa_directory'], rf'RDAmatrix-{os.path.basename(setup["folder_beRNN"])}-{setup["modalityWithin_comparison"]}-{setup["subNetwork_string"]}.pdf'), bbox_inches='tight', dpi=300)
+    plt.savefig(os.path.join(setup['rsa_directory'], rf'RDAmatrix-{os.path.basename(setup["folder_beRNN"])}-{setup["modalityWithin_comparison"]}-{setup["subNetwork_string"]}_PoC.pdf'), bbox_inches='tight', dpi=300)
 
     plt.show()
 

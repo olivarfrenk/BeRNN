@@ -7,13 +7,17 @@ import os
 import matplotlib.pyplot as plt
 from collections import OrderedDict, defaultdict
 import numpy as np
+import itertools
 
 # participantList = ['beRNN_05']
-participantList = ['beRNN_01','beRNN_02','beRNN_03','beRNN_04','beRNN_05']
+participantList = ['beRNN_01', 'beRNN_02', 'beRNN_03', 'beRNN_04', 'beRNN_05']
 
 clustering_std_list = []
 modularity_std_list = []
 participation_std_list = []
+
+# --- NEW: Dictionary to store performance data across all participants for the final general plot ---
+global_perf_data = {}
 
 for participant in participantList:
     # Calculate one plot for each participant with all three top markers as mean and variance over time
@@ -23,7 +27,7 @@ for participant in participantList:
         months = ['month_1', 'month_2', 'month_3', 'month_4', 'month_5', 'month_6', 'month_7', 'month_8', 'month_9',
                   'month_10', 'month_11', 'month_12']
 
-    data = 'highDim_correctOnly'
+    data = 'highDim'
     base_dir_ = rf'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-interDyn_multi_{participant}_{data}_256_hp1_mAll\{data}\{participant}\14'
     save_fig = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__interDynamics'
     os.makedirs(save_fig, exist_ok=True)
@@ -35,7 +39,7 @@ for participant in participantList:
     # Load data from all months into memory first
     data_by_month_and_model = defaultdict(OrderedDict)
 
-    for modelNumber in range(1,21):
+    for modelNumber in range(1, 21):
         for month in months:
             base_dir = os.path.join(base_dir_, rf'iter{modelNumber}_LeakyRNN_diag_256_relu')
             month_path = os.path.join(base_dir, f"model_{month}", 'log.json')
@@ -58,10 +62,10 @@ for participant in participantList:
         for month in months:
             stacked_y_list = []
 
-            for modelNumber in range(1,21):
+            for modelNumber in range(1, 21):
                 if marker in data_by_month_and_model[month][modelNumber]:
                     marker_data = data_by_month_and_model[month][modelNumber][marker]
-                    stacked_y_list.append(marker_data[:27]) # should create list of lists
+                    stacked_y_list.append(marker_data[:27])  # should create list of lists
 
             stacked_y[marker][month] = stacked_y_list
 
@@ -142,6 +146,45 @@ for participant in participantList:
 
     plt.show()
 
+    # info. Check for standard deviations in topological markers over complete training procedure **************************
+    clusteringList = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
+        [stacked_y['averageg_clustering'][markerLists] for markerLists in stacked_y['averageg_clustering']]))))
+    print('Clustering std: ', np.std(clusteringList))
+    clustering_std_list.append(np.std(clusteringList))
+
+    modularity_sparse = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
+        [stacked_y['modularity_sparse'][markerLists] for markerLists in stacked_y['modularity_sparse']]))))
+    print('Modularity std: ', np.std(modularity_sparse))
+    modularity_std_list.append(np.std(modularity_sparse))
+
+    average_participation = list(itertools.chain.from_iterable(list(itertools.chain.from_iterable(
+        [stacked_y['average_participation'][markerLists] for markerLists in stacked_y['average_participation']]))))
+    print('Particpation std: ', np.std(average_participation))
+    participation_std_list.append(np.std(average_participation))
+
+    performance = list(itertools.chain.from_iterable(
+        [data_by_month_and_model[month_key][model]['perf_avg'] for month_key in data_by_month_and_model
+         for model in data_by_month_and_model[month_key]]))
+    print('Performance std: ', np.std(performance))
+    print('Performance mean: ', np.mean(performance))
+
+    # --- NEW: Process and store sequential performance tracking matrices for the current participant ---
+    perf_by_month = []
+    for month in months:
+        month_perf_matrix = []
+        for modelNumber in range(1, 20 + 1):
+            if 'perf_avg' in data_by_month_and_model[month][modelNumber]:
+                # Assuming 'perf_avg' is a list matching marker data length (e.g., 27)
+                perf_data = data_by_month_and_model[month][modelNumber]['perf_avg']
+                month_perf_matrix.append(perf_data[:27])
+
+        if month_perf_matrix:
+            perf_by_month.append(np.array(month_perf_matrix))  # Shape: (20, 27)
+
+    global_perf_data[participant] = {
+        'matrices': perf_by_month,
+        'months': months
+    }
 
     # info. Check for standard deviations in topological markers over complete training procedure **************************
     import itertools
@@ -169,6 +212,93 @@ for participant in participantList:
 print('Clustering std mean', np.mean(clustering_std_list))
 print('Modularity std mean', np.mean(modularity_std_list))
 print('Participation std mean', np.mean(participation_std_list))
+
+
+########################################################################################################################
+# General Plot - Mean Performance and Variance Over Time For Each Participant ############################
+########################################################################################################################
+plt.figure(figsize=(9, 4))
+
+# change order
+participantList = ['beRNN_03', 'beRNN_04', 'beRNN_01', 'beRNN_02', 'beRNN_05']
+
+# Hard-coded array with the translated RGB colors normalized to values between 0.0 and 1.0
+perf_colors = np.array([
+    [13 / 255, 40 / 255, 242 / 255],  # Blue
+    [13 / 255, 202 / 255, 242 / 255],  # Cyan
+    [229 / 255, 242 / 255, 13 / 255],  # Yellow
+    [13 / 255, 242 / 255, 40 / 255],  # Green
+    [242 / 255, 13 / 255, 175 / 255]  # Magenta/Pink
+])
+
+# Process timelines for structural grid references
+max_total_points = 12 * 27
+
+for color_idx, participant in enumerate(participantList):
+    perf_means = []
+    perf_vars = []
+
+    p_matrices = global_perf_data[participant]['matrices']
+    p_months = global_perf_data[participant]['months']
+    total_p_points = len(p_months) * 27
+    x_axis_p = np.arange(total_p_points)
+
+    for matrix in p_matrices:
+        perf_means.extend(np.mean(matrix, axis=0))
+        perf_vars.extend(np.var(matrix, axis=0))
+
+    perf_means = np.array(perf_means)
+    perf_stds = np.sqrt(np.array(perf_vars))
+
+    # Plot the mean line for each participant
+    plt.plot(x_axis_p, perf_means, color=perf_colors[color_idx], label=participant, linewidth=1.5)
+
+    # Plot variance as a shaded area using the converted custom color palette
+    plt.fill_between(x_axis_p, perf_means - perf_stds, perf_means + perf_stds, color=perf_colors[color_idx], alpha=0.15)
+
+# Add vertical lines to visually separate the 12 sub-dicts
+# current_boundary = 0
+month = 0
+for separator in range(27, total_points, 27):
+    month += 1
+
+    plt.axvline(x=separator, color="gray", linestyle="--", alpha=0.3)
+
+    plt.text(separator - 13.5, 1.02, f"M{month}",
+             color='gray', fontsize=14, ha='center', fontweight='bold',
+             transform=plt.gca().get_xaxis_transform())
+
+plt.text(total_points - 13.5, 1.02, f"M{len(months)}",
+         color='gray', fontsize=14, ha='center', fontweight='bold',
+         transform=plt.gca().get_xaxis_transform())
+
+plt.title(f"All subjects", fontsize=16, y=1.1)
+plt.xlabel("Validation steps", fontsize=16)
+plt.ylabel("Performance", fontsize=16)
+plt.ylim(0, 1.0)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
+plt.xlim(0, 323)
+plt.grid(True, axis="y", linestyle=":", alpha=0.6)
+
+# Handle duplicate labels in legend
+handles, labels = plt.gca().get_legend_handles_labels()
+by_label = dict(zip(labels, handles))
+plt.legend(
+    by_label.values(),
+    ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ'],
+    loc="upper left",
+    bbox_to_anchor=(1.02, 1.0),
+    fontsize=14
+)
+
+plt.tight_layout()
+
+save_path = os.path.join(save_fig, f'testPerformance_overTime_allSubjects_{data}.pdf')
+plt.savefig(save_path, dpi=300, bbox_inches='tight')
+
+plt.show()
+
 
 
 # # info. Create structure for the LMM analysis **************************************************************************

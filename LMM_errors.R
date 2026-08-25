@@ -36,7 +36,7 @@ for (current_task in unique_tasks) {
   error_matrix <- as.matrix(wide_data[, -1])
   
   # ----------------------------------------------------
-  # PATH A: FIXED-EFFECTS MULTINOMIAL (Highly Recommended)
+  # PATH A: FIXED-EFFECTS MULTINOMIAL 
   # ----------------------------------------------------
   cat("\n--- Running Fixed-Effects Multinomial Regression ---\n")
   
@@ -55,7 +55,6 @@ for (current_task in unique_tasks) {
   
   # ----------------------------------------------------
   # PATH B: BAYESIAN MIXED-EFFECTS MULTINOMIAL 
-  # (Uncomment below if you strictly require a Mixed Model)
   # ----------------------------------------------------
   # cat("\n--- Running Bayesian Mixed-Effects Multinomial ---\n")
   # # Note: brms requires a long format where counts are treated as weights

@@ -463,8 +463,7 @@ from tools import rule_name
 # info: Plot performance over defined period as boxplots
 # info: ###############################################################################################################
 participant_dir = r'W:\group_csp\analyses\oliver.frank\Data'
-months = ['1', '2', '3', '4', '5', '6', '7']
-# months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
 strToSave = months[0] + '-' + months[-1]
 newParticpantList = ['beRNN_04']
 task_keys = [

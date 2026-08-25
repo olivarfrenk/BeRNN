@@ -12,12 +12,9 @@ import json
 # Configuration
 participant_dir = r'W:\group_csp\analyses\oliver.frank\Data'
 months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-# months = ['1', '2', '3', '4', '5', '6', '7']
-# months = ['3', '4', '5']
 strToSave = months[0] + '-' + months[-1]
 newParticpantList = ['beRNN_05']
-# newParticpantList = ['beRNN_04']
-reactionTime_comparison, plot_radars, wholePeriodPlots = True, False, False
+reactionTime_comparison, plot_radars, wholePeriodPlots = False, True, False
 
 paper_nomenclatur_dict = {
     'beRNN_03': 'HC1',
@@ -632,9 +629,8 @@ if plot_radars == True:
     beRNN_05_month_11 = [5, 2, 6, 6, 4, 4, 6, 6, 5, 5, 5, 5]
     beRNN_05_month_12 = [5, 2, 6, 6, 4, 4, 6, 6, 5, 5, 5, 5]
 
-    beRNN_06_month_3 = [1,1,1,1,1,1,1,1,1,1,1,1]
-    beRNN_06_month_4 = [6,6,6,6,6,6,6,6,6,6,6,6]
-    beRNN_06_month_5 = [4,2,4,4,4,4,1,4,5,5,2,4]
+    beRNN_06_month_3 = [1,1,1,1,1,1,1,1,1,1,1,1] # for legend visualization
+    beRNN_06_month_4 = [6,6,6,6,6,6,6,6,6,6,6,6] # for legend visualization
 
     beRNN_data = {
         "beRNN_01": {
@@ -707,21 +703,21 @@ if plot_radars == True:
             "11": beRNN_05_month_11,
             "12": beRNN_05_month_12,
         }
-        # ,
-        # "beRNN_06": {
-        #     "1": beRNN_01_month_1,
-        #     "2": beRNN_01_month_2,
-        #     "3": beRNN_01_month_3,
-        #     "4": beRNN_01_month_4,
-        #     "5": beRNN_01_month_5,
-        #     "6": beRNN_01_month_6,
-        #     "7": beRNN_01_month_7,
-        #     "8": beRNN_01_month_8,
-        #     "9": beRNN_01_month_9,
-        #     "10": beRNN_01_month_10,
-        #     "11": beRNN_01_month_11,
-        #     "12": beRNN_01_month_12,
-        # },
+        ,
+        "beRNN_06": {
+            "1": beRNN_01_month_1,
+            "2": beRNN_01_month_2,
+            "3": beRNN_06_month_3,
+            "4": beRNN_06_month_4,
+            "5": beRNN_01_month_5,
+            "6": beRNN_01_month_6,
+            "7": beRNN_01_month_7,
+            "8": beRNN_01_month_8,
+            "9": beRNN_01_month_9,
+            "10": beRNN_01_month_10,
+            "11": beRNN_01_month_11,
+            "12": beRNN_01_month_12,
+        },
     }
 
     for participant in newParticpantList:

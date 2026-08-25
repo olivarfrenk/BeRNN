@@ -637,16 +637,16 @@ if __name__ == '__main__':
     #                     '_gridSearch_domainTask-DM_beRNN_03_highDim_correctOnly_256',
     #                     '_gridSearch_domainTask_DM_beRNN_03_highDim_correctOnly_512']
 
-    foldersToOverlay = ['show-lowC_multi_beRNN_00_highDim_lowCognition_16',
-                  'show-lowC_multi_beRNN_00_highDim_lowCognition_32',
-                  'show-lowC_multi_beRNN_00_highDim_lowCognition_64',
-                  'show-lowC_multi_beRNN_00_highDim_lowCognition_128',
-                  'show-lowC_multi_beRNN_00_highDim_lowCognition_256',
-                  'show-lowC_multi_beRNN_00_highDim_lowCognition_512']
+    foldersToOverlay = ['show-grid_multi_beRNN_03_highDim_16',
+                  'show-grid_multi_beRNN_03_highDim_32',
+                  'show-grid_multi_beRNN_03_highDim_64',
+                  'show-grid_multi_beRNN_03_highDim_128',
+                  'show-grid_multi_beRNN_03_highDim_256',
+                  'show-grid_multi_beRNN_03_highDim_512']
 
     paper_nomenclatur_dict = ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ']
     participantList = ['beRNN_00', 'beRNN_01', 'beRNN_02', 'beRNN_03', 'beRNN_04', 'beRNN_05']
-    participantNumber = 0 # for standard visualization beRNN_03
+    participantNumber = 3 # for standard visualization beRNN_03
     network_sizes = ['16', '32', '64', '128', '256', '512']  # for standard visualization
 
     mode = ['train', 'test'][1]
