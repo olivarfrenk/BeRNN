@@ -1,16 +1,5 @@
-########################################################################################################################
-# info: training
-########################################################################################################################
-# Train Models with collected data. Particpant, data and directories have to be adjusted manually.
-########################################################################################################################
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 from __future__ import division
-
 import warnings
-
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import sys
@@ -42,9 +31,13 @@ from network import Model, get_perf, get_perf_lowDIM
 from _benchmark import generate_trials
 import tools
 
+'''
+Roles:
+- Trains models with defined hyperparameters
+'''
 
 ########################################################################################################################
-# Predefine functions
+# head. Predefine functions
 ########################################################################################################################
 def apply_threshold(matrix, threshold):
     # info: added function second time from networkAnalysis for training on server with only training.py
@@ -780,7 +773,8 @@ def train(data_dir, model_dir, train_data, eval_data, hp=None, max_steps=4800, d
 
         ########################################################################################################################
 
-# Train model
+########################################################################################################################
+# head. Train model
 ########################################################################################################################
 if __name__ == '__main__':
     # Initialize list for all training times for each model

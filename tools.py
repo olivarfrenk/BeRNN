@@ -1,12 +1,3 @@
-########################################################################################################################
-# head: tools
-########################################################################################################################
-# Different functions used on the whole project.
-########################################################################################################################
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import errno
@@ -17,6 +8,11 @@ import pickle
 # import shutil
 # from glob import glob
 import numpy as np
+
+'''
+Roles:
+- Defines helper functions for the whole repository
+'''
 
 rules_dict = {'all' : ['DM', 'DM_Anti', 'EF', 'EF_Anti', 'RP', 'RP_Anti', 'RP_Ctx1', 'RP_Ctx2',
               'WM', 'WM_Anti', 'WM_Ctx1', 'WM_Ctx2'], # All tasks
@@ -36,7 +32,6 @@ rules_dict = {'all' : ['DM', 'DM_Anti', 'EF', 'EF_Anti', 'RP', 'RP_Anti', 'RP_Ct
                   'delaygo', 'delayanti',  # s_WM_Pro, s_WM_Anti
                   'delaydm1', 'delaydm2']  # s_WM_Ctx1, s_WM_Ctx2
               }
-
 
 rule_name = {
             'DM': 'Decison Making Pro (DM Pro)',
@@ -923,24 +918,3 @@ def gen_ortho_matrix(dim, rng=None):
     return H
 
 
-
-# Valuable legacy stuff ################################################################################################
-# import os
-# folderList = ['_gridSearch_domainTask-WM_beRNN_03_highDim_correctOnly_16', '_gridSearch_domainTask-WM_beRNN_03_highDim_correctOnly_32', '_gridSearch_domainTask-WM_beRNN_03_highDim_correctOnly_64',
-#                   '_gridSearch_domainTask-WM_beRNN_03_highDim_correctOnly_128', '_gridSearch_domainTask-WM_beRNN_03_highDim_correctOnly_256', '_gridSearch_domainTask-WM_beRNN_03_highDim_correctOnly_512']
-#
-# participant = ['beRNN_01', 'beRNN_02', 'beRNN_03', 'beRNN_04', 'beRNN_05'][2]
-# dataType = ['highDim', 'highDim_3stimTC', 'highDim_correctOnly'][2]
-#
-# for folder in folderList:
-#     directory = fr'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\{folder}\{dataType}\{participant}'
-#     counter = 0
-#     for modelBatch in os.listdir(directory):
-#         for model in os.listdir(os.path.join(directory, modelBatch)):
-#             if model == 'times.txt':
-#                 continue
-#             if len(os.listdir(os.path.join(directory, modelBatch, model, 'model_month_6'))) < 3:
-#                 counter += 1
-#     print(folder)
-#     print(counter)
-#     print('******************************')

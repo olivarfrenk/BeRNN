@@ -24,42 +24,45 @@ from _analysis import clustering
 from tools import load_hp, load_pickle, participation_coefficient
 
 '''
-Complete brain/beRNN comparison by correlation and/or rsa. 
-Both data modalities have to be preprocessed with:
+Roles:
+- Compares brain/beRNN multiple models by correlation and/or RDA 
+- Preprocesses fMRI for RDA anaylsis (preprocess_fMRI2rdm)
+- Creates correlation matrices of correlation matrices for both network types
+- Visualizes fMRI and DTI correlations matrices
+- Plots top. marker over densities
 
+RNNs have to be preprocessed with:
 - beRNN: beRNN_v1/_hyperparameterOverview.py or beRNN_v1/singleNetworkAnaylsis.py
-- brain: 'preprocess_fMRI2rdm' below
 '''
 
-
-# head. mlflow ui ######################################################################################################
+# info. mlflow ui ######################################################################################################
 # mlflow server --backend-store-uri sqlite:///C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\beRNN_main_mlflow.db
 # http://localhost:5000 < browser
-# head. mlflow ui ######################################################################################################
+# info. mlflow ui ######################################################################################################
 
 
 ########################################################################################################################
 # head - Variables and functions #######################################################################################
 ########################################################################################################################
 setup = {
-    'comparison': ['correlation', 'rsa', None][1],
-    'modalityWithin_comparison': ['brain', 'beRNN', 'standard'][1], # standard is beRNN brain comparison - 'brain': brain/brain - 'beRNN': beRNN/beRNN
-    # 'numberOfModels': [5, 3], # second value represents beRNN_04 - only defined for beRNNs - should be 3 if compared to brain in 'standard' - [5, 3] or [20, 20]
-    'numberOfModels': [20, 20], # second value represents beRNN_04 - only defined for beRNNs - should be 3 if compared to brain in 'standard' - [5, 3] or [20, 20]
+    'comparison': ['correlation', 'rsa', None][2],
+    'modalityWithin_comparison': ['brain', 'beRNN', 'standard'][2], # standard is beRNN brain comparison - 'brain': brain/brain - 'beRNN': beRNN/beRNN
+    'numberOfModels': [5, 3], # second value represents beRNN_04 - only defined for beRNNs - should be 3 if compared to brain in 'standard' - [5, 3] or [20, 20]
+    # 'numberOfModels': [20, 20], # second value represents beRNN_04 - only defined for beRNNs - should be 3 if compared to brain in 'standard' - [5, 3] or [20, 20]
     'threshold': 0.1,
-    # 'participants_beRNN': ['beRNN_03', 'beRNN_04', 'beRNN_01', 'beRNN_02', 'beRNN_05'], # order for paper - with 'beRNN_06' for ALL comparison
+    'participants_beRNN': ['beRNN_03', 'beRNN_04', 'beRNN_01', 'beRNN_02', 'beRNN_05'], # order for paper - with 'beRNN_06' for ALL comparison
     # 'participants_beRNN': ['beRNN_03', 'beRNN_08'], # baseline comparison w. shared (00) and random (06)
-    'participants_beRNN': ['beRNN_03', 'beRNN_00', 'beRNN_06', 'beRNN_07', 'beRNN_08'], # baseline comparison w. shared (00) and random (06)
-    # 'paper_nomenclatur': ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ'], # nomenclatur for paper plots - only applied for RDA
+    # 'participants_beRNN': ['beRNN_03', 'beRNN_00', 'beRNN_06', 'beRNN_07', 'beRNN_08'], # baseline comparison w. shared (00) and random (06)
+    'paper_nomenclatur': ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ'], # nomenclatur for paper plots - only applied for RDA
     # 'paper_nomenclatur': ['HC1', 'NRE'], # nomenclatur for paper plots - only applied for RDA
-    'paper_nomenclatur': ['HC1', 'POL', 'RND', 'LIN', 'NRE'], # nomenclatur for paper plots - only applied for RDA
+    # 'paper_nomenclatur': ['HC1', 'POL', 'RND', 'LIN', 'NRE'], # nomenclatur for paper plots - only applied for RDA
     # 'paper_nomenclatur': ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ', 'ALL'], # nomenclatur for paper plots - only applied for RDA
     'participants': ['sub-6IECX', 'sub-DKHPB', 'sub-KPB84', 'sub-YL4AS', 'sub-96WID'], # nomenclatur for paper plots - only applied for RDA
     'participants_snip': ['sub-SNIP6IECX', 'sub-SNIPDKHPB', 'sub-SNIPKPB84', 'sub-SNIPYL4AS', 'sub-SNIP96WID'], # nomenclatur for paper plots - only applied for RDA
-    'folder_beRNN': fr'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__baseline\robust_multi_beRNN_01_highDim_256_hp_8', # beRNN_01 is default - add __baseline as folder for proof of concept
-    'robust_compare': True, # false if 1,3,6,9,12 brain comparison
+    'folder_beRNN': fr'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\compare_4task_beRNN_01_highDim_128_hp8', # beRNN_01 is default - add __baseline as folder for proof of concept
+    'robust_compare': False, # false if 1,3,6,9,12 brain comparison
     'folder_brain': r'W:\group_csp\analyses\oliver.frank\_brainModels',
-    'subNetwork_string': 'Default_contrast',
+    'subNetwork_string': 'Vis_contrast',
     'folder_topologicalMarker_pValue_lists': r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__topologicalMarker_pValue_lists',
     # 'folder_brain_meanVecs': r'W:\group_csp\in_house_datasets\bernn\mri\derivatives\xcpd_0.11.1\sub-SNIP6IECX01\func',
     'dataType': None, # will be defined below
@@ -71,9 +74,9 @@ setup = {
     'preprocess_fMRI2rdm': False, # info. legacy see _brain/parcellation
     "visualize_fMRI": False,
     "visualize_dti": False,
-    "correlationOf_correlationMatices_fMRI": False, # outsourced to fingerprints.py
-    "correlationOf_correlationMatices_beRNN": False, # outsourced to fingerprints.py
-    "plotTopMarkerOverDensities": False,
+    "correlationOf_correlationMatrices_fMRI": False, # outsourced to fingerprints.py
+    "correlationOf_correlationMatrices_beRNN": False, # outsourced to fingerprints.py
+    "plotTopMarkerOverDensities": True,
     "session": '03'
 }
 
@@ -468,9 +471,9 @@ if setup['comparison'] == 'correlation':
             transitivity_list.append(transitivity)
             density_list.append(density_marker)
 
-            eigenvector = nx.eigenvector_centrality_numpy(G_brain)
-            avg_eigenvector = np.mean(list(eigenvector.values()))
-            avg_eigenvector_list.append(avg_eigenvector)
+            # eigenvector = nx.eigenvector_centrality_numpy(G_brain)
+            # avg_eigenvector = np.mean(list(eigenvector.values()))
+            # avg_eigenvector_list.append(avg_eigenvector)
 
             # clustering
             clustering = nx.clustering(G_brain)
@@ -529,7 +532,7 @@ if setup['comparison'] == 'correlation':
 
         folder_beRNN = setup["folder_beRNN"].replace("beRNN_01", participant, 1)
         hp_set = folder_beRNN.split('_')[-1]
-        model_folder = rf'{folder_beRNN}\{setup["dataType"]}\{participant}\{hp_set}'
+        model_folder = rf'{folder_beRNN}\{setup["dataType"]}\{participant}\14'
 
         global_eff_list = []
         transitivity_list = []
@@ -549,13 +552,14 @@ if setup['comparison'] == 'correlation':
 
         # numberOfModels = 20
 
-        for model in os.listdir(model_folder)[:numberOfModels]:
+        for model in os.listdir(os.path.join(model_folder, 'iter1_LeakyRNN_diag_128_relu'))[:numberOfModels]: # info. brain comparison only
+            print(model)
         # for model in os.listdir(model_folder):
             if model == 'times.txt':
                 continue
-            if 'fundamentals' in model_folder or 'fs' in model_folder:
-                pkl_beRNN3 = rf'{model_folder}\{model}\var_test_lay1_rule_fundamentals.pkl'
-                pkl_beRNN2 = rf'{model_folder}\{model}\corr_test_lay1_rule_fundamentals.pkl'
+            if '4task' in model_folder:
+                pkl_beRNN3 = rf'{model_folder}\iter1_LeakyRNN_diag_128_relu\{model}\var_test_lay1_rule_4task.pkl'
+                pkl_beRNN2 = rf'{model_folder}\iter1_LeakyRNN_diag_128_relu\{model}\corr_test_lay1_rule_4task.pkl'
             elif 'multiTask' in model_folder or 'AllTask' in model_folder:
                 pkl_beRNN3 = rf'{model_folder}\{model}\model_month_6\var_test_lay1_rule_all.pkl'
                 pkl_beRNN2 = rf'{model_folder}\{model}\model_month_6\corr_test_lay1_rule_all.pkl'
@@ -607,9 +611,9 @@ if setup['comparison'] == 'correlation':
             transitivity_list.append(transitivity)
             density_list.append(density_marker)
 
-            eigenvector = nx.eigenvector_centrality_numpy(G_beRNN)
-            avg_eigenvector = np.mean(list(eigenvector.values()))
-            avg_eigenvector_list.append(avg_eigenvector)
+            # eigenvector = nx.eigenvector_centrality_numpy(G_beRNN)
+            # avg_eigenvector = np.mean(list(eigenvector.values()))
+            # avg_eigenvector_list.append(avg_eigenvector)
 
             # clustering
             clustering = nx.clustering(G_beRNN)
@@ -647,7 +651,7 @@ if setup['comparison'] == 'correlation':
         topologicalMarker_dict_beRNN[participant]['avg_betweenness'] = avg_betweenness_list
         topologicalMarker_dict_beRNN[participant]['avg_closeness'] = avg_closeness_list
 
-    beRNN_fileDirectory = os.path.join(setup['folder_topologicalMarker_pValue_lists'], 'allModels')
+    beRNN_fileDirectory = os.path.join(setup['folder_topologicalMarker_pValue_lists'])
     os.makedirs(beRNN_fileDirectory, exist_ok=True)
     current_folder_beRNN = setup["folder_beRNN"].split('\\')[-1]
     with open(os.path.join(beRNN_fileDirectory, f'topologicalMarker_dict_beRNN_{current_folder_beRNN}_{setup["threshold"]}.json'), 'w') as fp:
@@ -961,7 +965,7 @@ elif setup['comparison'] == 'rsa':
     )
 
     os.makedirs(setup['rsa_directory'], exist_ok=True)
-    plt.savefig(os.path.join(setup['rsa_directory'], rf'RDAmatrix-{os.path.basename(setup["folder_beRNN"])}-{setup["modalityWithin_comparison"]}-{setup["subNetwork_string"]}_PoC.pdf'), bbox_inches='tight', dpi=300)
+    plt.savefig(os.path.join(setup['rsa_directory'], 'highDim_correctOnly', rf'RDAmatrix-{os.path.basename(setup["folder_beRNN"])}-{setup["modalityWithin_comparison"]}-{setup["subNetwork_string"]}.pdf'), bbox_inches='tight', dpi=300)
 
     plt.show()
 
@@ -1003,8 +1007,7 @@ if setup["visualize_fMRI"] == True:
         plt.title('mean')
         plt.show()
 
-
-if setup["correlationOf_correlationMatices_fMRI"] == True:
+if setup["correlationOf_correlationMatrices_fMRI"] == True:
     correlationMatrices = []
     participant_mapping = []  # Tracken, zu welchem Probanden jede Aufnahme gehört
     recordings_per_participant = []  # Speichert die echten Blockgrößen für die Patches
@@ -1147,8 +1150,7 @@ if setup["correlationOf_correlationMatices_fMRI"] == True:
 
     plt.show()
 
-
-if setup["correlationOf_correlationMatices_beRNN"] == True:
+if setup["correlationOf_correlationMatrices_beRNN"] == True:
     correlationMatrices = []
     participant_mapping = []
     recordings_per_participant = []
@@ -1297,7 +1299,6 @@ if setup["correlationOf_correlationMatices_beRNN"] == True:
 
     plt.show()
 
-
 if setup["visualize_dti"] == True:
     # Correlation matrices of dti correlation matrices #####################################################################
     order = ['sub-KPB84', 'sub-YL4AS', 'sub-6IECX', 'sub-DKHPB', 'sub-96WID']
@@ -1359,27 +1360,39 @@ if setup["visualize_dti"] == True:
     plt.title("Cosine Disimilarity")
     plt.show()
 
-
 if setup["plotTopMarkerOverDensities"] == True:
     # Visualize topological marker for different desnitites and data sets/modalities
     participant_to_paper = dict(zip(setup['participants_beRNN'], setup['paper_nomenclatur']))
 
+    perf_colors = np.array([
+        [13 / 255, 40 / 255, 242 / 255],  # Blue
+        [13 / 255, 202 / 255, 242 / 255],  # Cyan
+        [229 / 255, 242 / 255, 13 / 255],  # Yellow
+        [13 / 255, 242 / 255, 40 / 255],  # Green
+        [242 / 255, 13 / 255, 175 / 255]  # Magenta/Pink
+    ])
+
     densities = ['0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0']
     for density in densities:
-        plot_folder = 'densityPlots_multiTask_beRNN_highDimCorrects_5Models'
+        plot_folder = 'densityPlots_4Task_brain'
         directory = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__topologicalMarker_pValue_lists'
-        file_path = os.path.join(directory, f'topologicalMarker_dict_beRNN_highDim_correctOnly_{density}.json')
+        file_path = os.path.join(directory, f'topologicalMarker_dict_brain_{density}.json')
 
         with open(file_path, 'r') as f:
             data = json.load(f)
 
-        metrics = ["clustering","modularity","participation"]
+        metrics = ["avg_clustering","mod_value_sparse","participation_coefficient"]
 
         plot_data = []
 
         for participant, values in data.items():
             for json_key, clean_name in enumerate(metrics):
                 subset = values[metrics[json_key]]
+
+                if clean_name == 'avg_clustering': clean_name = 'Clustering'
+                elif clean_name == 'mod_value_sparse': clean_name = 'Modularity'
+                elif clean_name == 'participation_coefficient': clean_name = 'Participation'
+
                 for val in subset:
                     plot_data.append({
                         "Participant": participant,
@@ -1392,11 +1405,11 @@ if setup["plotTopMarkerOverDensities"] == True:
         df["Participant"] = pd.Categorical(df["Participant"],categories=setup['participants_beRNN'],ordered=True)
 
         custom_colors = {
-            "beRNN_03": "#1f77b4",  # Deep Blue
-            "beRNN_04": "#a1c9ed",  # Light Blue
-            "beRNN_01": "#ff7f0e",  # Orange
-            "beRNN_02": "#2ca02c",  # Green
-            "beRNN_05": "#9467bd"  # Purple
+            "beRNN_03": perf_colors[0],  # Blue
+            "beRNN_04": perf_colors[1],  # Cyan
+            "beRNN_01": perf_colors[2],  # Yellow
+            "beRNN_02": perf_colors[3],  # Green
+            "beRNN_05": perf_colors[4]  # Magenta/Pink
         }
 
         plt.figure(figsize=(5,7))
@@ -1453,4 +1466,5 @@ if setup["plotTopMarkerOverDensities"] == True:
         plt.savefig(os.path.join(saveDirectory, f'topologicalMarker_density_{density}.pdf'))
 
         plt.show()
+
 

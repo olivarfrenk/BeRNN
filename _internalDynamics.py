@@ -1,22 +1,28 @@
-########################################################################################################################
-# head. Track the dynamical change of internal representations (mainly topological markers) over training time #########
-########################################################################################################################
-# Plot train and test performance over training steps for one particular model
 import json
 import os
 import matplotlib.pyplot as plt
 from collections import OrderedDict, defaultdict
 import numpy as np
+import pandas as pd
 import itertools
 
-# participantList = ['beRNN_05']
+'''
+Roles:
+- Tracks and plots internal dynamics (top. Marker) over defined number of models across subjects
+- Creates csv file with topological markers over time across subjects for consecutive LMM analysis (createCSV4LMM)
+'''
+
 participantList = ['beRNN_01', 'beRNN_02', 'beRNN_03', 'beRNN_04', 'beRNN_05']
 
 clustering_std_list = []
 modularity_std_list = []
 participation_std_list = []
 
-# --- NEW: Dictionary to store performance data across all participants for the final general plot ---
+createCSV4LMM = True
+
+########################################################################################################################
+# head. store performance data across all participants for the final general plot
+########################################################################################################################
 global_perf_data = {}
 
 for participant in participantList:
@@ -50,7 +56,6 @@ for participant in participantList:
                 print(f"Warning: File not found: {month_path}")
                 data_by_month_and_model[month][modelNumber] = {}
 
-    # Setup the plot
     fig, ax = plt.subplots(figsize=(5, 3))
     colors = plt.cm.viridis(np.linspace(0, 1, len(topMarkerList)))
 
@@ -215,7 +220,7 @@ print('Participation std mean', np.mean(participation_std_list))
 
 
 ########################################################################################################################
-# General Plot - Mean Performance and Variance Over Time For Each Participant ############################
+# head. General Plot - Mean Performance and Variance Over Time For Each Participant
 ########################################################################################################################
 plt.figure(figsize=(9, 4))
 
@@ -300,46 +305,46 @@ plt.savefig(save_path, dpi=300, bbox_inches='tight')
 plt.show()
 
 
+if createCSV4LMM:
+    ########################################################################################################################
+    # head. Create structure for the LMM analysis
+    ########################################################################################################################
+    list_clust = [stacked_y['averageg_clustering'][markerLists] for markerLists in stacked_y['averageg_clustering']]
+    list_modularity = [stacked_y['modularity_sparse'][markerLists] for markerLists in stacked_y['modularity_sparse']]
+    list_participation = [stacked_y['average_participation'][markerLists] for markerLists in stacked_y['average_participation']]
 
-# # info. Create structure for the LMM analysis **************************************************************************
-# import pandas as pd
-#
-# list_clust = [stacked_y['averageg_clustering'][markerLists] for markerLists in stacked_y['averageg_clustering']]
-# list_modularity = [stacked_y['modularity_sparse'][markerLists] for markerLists in stacked_y['modularity_sparse']]
-# list_participation = [stacked_y['average_participation'][markerLists] for markerLists in stacked_y['average_participation']]
-#
-# if participant == 'beRNN_04':
-#     months = [f"Month_{i}" for i in range(1, 8)]  # 1 to 7
-# else:
-#     months = [f"Month_{i}" for i in range(1, 13)]  # 1 to 12
-#
-# rows = []
-#
-# for m_idx, month_name in enumerate(months):
-#     for model_idx in range(20): # number of models
-#         unique_model_id = f"{participant}_{month_name}_Model_{model_idx + 1}"
-#
-#         for step_idx in range(27): # number of validation steps per month
-#             m1_val = list_clust[m_idx][model_idx][step_idx]
-#             m2_val = list_modularity[m_idx][model_idx][step_idx]
-#             m3_val = list_participation[m_idx][model_idx][step_idx]
-#
-#             # Append a flat row
-#             rows.append({
-#                 "Subject": participant,
-#                 "Month": month_name,
-#                 "Model_ID": unique_model_id,
-#                 "Validation_Step": step_idx + 1,  # 1-indexed step tracking
-#                 "Marker_1": m1_val,
-#                 "Marker_2": m2_val,
-#                 "Marker_3": m3_val
-#             })
-#
-#
-# subj_df = pd.DataFrame(rows)
-#
-# file_name = f"trajectory_data_{participant}_{data}.csv"
-# subj_df.to_csv(file_name, index=False)
-# print(f"Saved: {file_name}")
+    if participant == 'beRNN_04':
+        months = [f"Month_{i}" for i in range(1, 8)]  # 1 to 7
+    else:
+        months = [f"Month_{i}" for i in range(1, 13)]  # 1 to 12
+
+    rows = []
+
+    for m_idx, month_name in enumerate(months):
+        for model_idx in range(20): # number of models
+            unique_model_id = f"{participant}_{month_name}_Model_{model_idx + 1}"
+
+            for step_idx in range(27): # number of validation steps per month
+                m1_val = list_clust[m_idx][model_idx][step_idx]
+                m2_val = list_modularity[m_idx][model_idx][step_idx]
+                m3_val = list_participation[m_idx][model_idx][step_idx]
+
+                # Append a flat row
+                rows.append({
+                    "Subject": participant,
+                    "Month": month_name,
+                    "Model_ID": unique_model_id,
+                    "Validation_Step": step_idx + 1,  # 1-indexed step tracking
+                    "Marker_1": m1_val,
+                    "Marker_2": m2_val,
+                    "Marker_3": m3_val
+                })
+
+
+    subj_df = pd.DataFrame(rows)
+
+    file_name = f"trajectory_data_{participant}_{data}.csv"
+    subj_df.to_csv(file_name, index=False)
+    print(f"Saved: {file_name}")
 
 

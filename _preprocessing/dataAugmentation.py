@@ -1,13 +1,3 @@
-########################################################################################################################
-# info: dataAugmentation
-########################################################################################################################
-# Augment/ Multiply data with geometrical transformations of the real collected data (Rotation, Mirroring, Randomization,
-# Pertubation) - approach not feasible for individual human behavioral data due to its already high-variant nature.
-########################################################################################################################
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 import os
 import numpy as np
 import random
@@ -15,6 +5,11 @@ import json
 import glob
 
 # import tools
+
+'''
+Roles:
+- Augments data with Rotation, Mirrored, Segmentation, Randomization (not used for published models)
+'''
 
 ########################################################################################################################
 # Preallocate variables

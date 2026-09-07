@@ -1,10 +1,3 @@
-########################################################################################################################
-# head: Task variance
-########################################################################################################################
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 from __future__ import division
 
 import os
@@ -15,11 +8,13 @@ from collections import OrderedDict
 # import matplotlib as mpl
 # import matplotlib.pyplot as plt
 # import tensorflow as tf
+
 # attention. csp_frank_oliver_3 version ++++++++++++++++++++++++++++++++++++++++++++++
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 # import mlflow
 # attention. csp_frank_oliver_3 version ++++++++++++++++++++++++++++++++++++++++++++++
+
 # import random
 import errno
 
@@ -30,8 +25,13 @@ import tools
 
 save = True
 
+'''
+Roles:
+- Preprocesses functional hidden activity into various necessary representations for subsequent analysis 
+'''
+
 ########################################################################################################################
-# Define functions
+# head. Define functions
 ########################################################################################################################
 def _compute_variance_bymodel(data_dir, model_dir, layer, data_type, networkAnalysis, model: object, sess: object, mode: str, monthsConsidered: list, rules: object = None, random_rotation: object = False) -> object:
     """Compute variance for all tasks.

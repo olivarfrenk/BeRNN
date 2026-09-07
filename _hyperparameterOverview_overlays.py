@@ -1,7 +1,3 @@
-#%%
-########################################################################################################################
-# head: hp overview ####################################################################################################
-########################################################################################################################
 from __future__ import division
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -19,6 +15,14 @@ import networkx as nx
 
 from _hyperparameterOverview import compute_n_cluster, get_n_clusters #, plot_vertical_hp_legend
 
+'''
+Roles: 
+- Creates grid search hp overview for several network sizes at once (standard)
+- Creates robustness hp overview for several network sizes at once (robustness)
+- Creates top. marker lists over models and saves as dicts for consecutive analysis 
+- Creates top. marker X test performance correlation plots 
+- Visualizes train/test performance over defined period for one model (visualizePerformanceOverTime)
+'''
 
 ########################################################################################################################
 # head: Create histogramms to visualize and investigate interrelations of hyperparameter, modularity and performance ###
@@ -26,16 +30,17 @@ from _hyperparameterOverview import compute_n_cluster, get_n_clusters #, plot_ve
 def _get_hp_ranges():
     """Get ranges of hp."""
     hp_ranges = OrderedDict()
-    # hp_ranges['activation'] = ['softplus', 'relu', 'tanh']
+    hp_ranges['activation'] = ['softplus', 'relu', 'tanh']
     # hp_ranges['rnn_type'] = ['LeakyRNN', 'LeakyGRU', 'MultiLayer']
     # hp_ranges['n_rnn'] = [8, 16, 24, 32, 48, 64, 96, 128, 256, 512]
+    hp_ranges['w_rec_init'] = ['randortho', 'randgauss', 'diag']
     # hp_ranges['w_rec_init'] = ['randortho', 'randgauss', 'diag', 'brainStructure']
     hp_ranges['l1_h'] = [0, 1e-5, 1e-4, 1e-3]
     hp_ranges['l1_weight'] = [0, 1e-5, 1e-4, 1e-3]
     hp_ranges['l2_h'] = [0, 1e-5, 1e-4, 1e-3]
     hp_ranges['l2_weight'] = [0, 1e-5, 1e-4, 1e-3]
-    # hp_ranges['learning_rate'] = [0.002, 0.0015, 0.001, 0.0005, 0.0001, 0.00005]
-    # hp_ranges['learning_rate_mode'] = ['constant', 'exp_range', 'triangular2']
+    hp_ranges['learning_rate'] = [0.0015, 0.001, 0.0005, 0.0001]
+    hp_ranges['learning_rate_mode'] = ['constant', 'exp_range', 'triangular2']
     # hp_ranges['errorBalancingValue'] = [1., 5.]
     return hp_ranges
 
@@ -75,7 +80,8 @@ def general_hp_plot_overlay_multiple(meta_n_clusters_list,
     colors = [cmap_colors(0.4 + 0.6 * i / max(1, n_searches - 1)) for i in range(n_searches)]
 
     # prepare figure
-    fig, axs = plt.subplots(6, 1, figsize=(8, 8), sharex=True, gridspec_kw={'height_ratios': [1, 1, 1, 1, 1, 1.5]})
+    # fig, axs = plt.subplots(6, 1, figsize=(8, 8), sharex=True, gridspec_kw={'height_ratios': [1, 1, 1, 1, 1, 1.5]})
+    fig, axs = plt.subplots(6, 1, figsize=(8, 8), sharex=True, gridspec_kw={'height_ratios': [1, 1, 1, 1, 1, 3]})
     plt.subplots_adjust(hspace=0.5)
 
     hp_visualize_list = []
@@ -255,7 +261,7 @@ def general_hp_plot_overlay_multiple(meta_n_clusters_list,
 
     # === Save ===
     save_path = os.path.join(directory, 'visuals_overlay',
-                             f'overlay_multi_density_{density}_{"-".join(folder_labels[0].split("_")[:-1])}_{sort_variable}_{mode}.pdf')
+                             f'overlay_multi_density_{density}_{"-".join(folder_labels[0].split("_")[:-1])}_{sort_variable}_{mode}_hpOverview.pdf')
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.savefig(save_path, bbox_inches='tight', dpi=300)
     plt.show()
@@ -455,7 +461,7 @@ def visualize_topMarker_testPerf_corrlation(meta_perf_test_list, meta_topMarker_
     avg_perf_test_list_all = []
     topMarker_list_all = []
 
-    for s in range(0,6):
+    for s in range(5,6):
         avg_perf_test_list = list(meta_perf_test_list[s])
         topMarker_list = list(meta_topMarker_list[s])
 
@@ -521,7 +527,7 @@ def visualize_topMarker_testPerf_corrlation(meta_perf_test_list, meta_topMarker_
     # Layout and save
     fig.tight_layout()
     fig.savefig(
-        fr"{directory_metaOverlayVisual}\visuals_overlay\correlation_testPerformance_{topMarker_name}_{'_'.join(foldersToOverlay[-1].split('_')[:-1])}.pdf",
+        fr"{directory_metaOverlayVisual}\visuals_overlay\correlation_testPerformance_{topMarker_name}_{'_'.join(foldersToOverlay[-1].split('_')[:-1])}_512.pdf",
         dpi=300,
         bbox_inches="tight"
     )
@@ -609,40 +615,27 @@ def visualize_simulatedTopMarkerNetworks():
     plt.show()
 
 
-########################################################################################################################
-########################################################################################################################
-
-
-HP_NAME = {'activation': 'Activation fun.',
-           # 'rnn_type': 'Network type',
-           'w_rec_init': 'Initialization',
-           'n_rnn': 'Num. hidden units',
-           'l1_h': 'L1 rate',
-           'l1_weight': 'L1 weight',
-           'l2_h': 'L2 rate',
-           'l2_weight': 'L2 weight',
-           'target_perf': 'Target perf.',
-           'learning_rate': 'Learning rate',
-           'learning_rate_mode': 'Learning rate mode'}
-           # 'errorBalancingValue': 'Error balancing value'}
-
-
 if __name__ == '__main__':
+    # Definition of hp namings on hp plot
+    HP_NAME = {'activation': 'Activation fun.',
+               # 'rnn_type': 'Network type',
+               'w_rec_init': 'Initialization',
+               'n_rnn': 'Num. hidden units',
+               'l1_h': 'L1 rate',
+               'l1_weight': 'L1 weight',
+               'l2_h': 'L2 rate',
+               'l2_weight': 'L2 weight',
+               'target_perf': 'Target perf.',
+               'learning_rate': 'Learning rate',
+               'learning_rate_mode': 'Learning rate mode'}
+                # 'errorBalancingValue': 'Error balancing value'}
 
-    # Definition of important variables
-    # foldersToOverlay = ['_gridSearch_domainTask-DM_beRNN_03_highDim_correctOnly_16',
-    #                     '_gridSearch_domainTask-DM_beRNN_03_highDim_correctOnly_32',
-    #                     '_gridSearch_domainTask-DM_beRNN_03_highDim_correctOnly_64',
-    #                     '_gridSearch_domainTask-DM_beRNN_03_highDim_correctOnly_128',
-    #                     '_gridSearch_domainTask-DM_beRNN_03_highDim_correctOnly_256',
-    #                     '_gridSearch_domainTask_DM_beRNN_03_highDim_correctOnly_512']
-
-    foldersToOverlay = ['show-grid_multi_beRNN_03_highDim_16',
-                  'show-grid_multi_beRNN_03_highDim_32',
-                  'show-grid_multi_beRNN_03_highDim_64',
-                  'show-grid_multi_beRNN_03_highDim_128',
-                  'show-grid_multi_beRNN_03_highDim_256',
-                  'show-grid_multi_beRNN_03_highDim_512']
+    foldersToOverlay = ['show-nonRec_multi_beRNN_03_highDim_correctOnly_16',
+                        'show-nonRec_multi_beRNN_03_highDim_correctOnly_32',
+                        'show-nonRec_multi_beRNN_03_highDim_correctOnly_64',
+                        'show-nonRec_multi_beRNN_03_highDim_correctOnly_128',
+                        'show-nonRec_multi_beRNN_03_highDim_correctOnly_256',
+                        'show-nonRec_multi_beRNN_03_highDim_correctOnly_512']
 
     paper_nomenclatur_dict = ['HC1', 'HC2', 'MDD', 'ASD', 'SCZ']
     participantList = ['beRNN_00', 'beRNN_01', 'beRNN_02', 'beRNN_03', 'beRNN_04', 'beRNN_05']
@@ -658,6 +651,8 @@ if __name__ == '__main__':
 
     models_over_wholeTimePeriod = False # info. Should be true if analysis is run over months 1, 3, 6, 9, 12
     lastMonth = '5'
+
+    visualizePerformanceOverTime = True # for paper plot - visulaizing performance of one model over defined period
 
     # .info initialize a dict and start a density loop *****************************************************************
     meta_dict = defaultdict(OrderedDict)
@@ -795,7 +790,6 @@ if __name__ == '__main__':
         # print(f'density {density} done.')
         # # .info save lists to nested dict ******************************************************************************
 
-
     # Visualize big overlay
     if overlay == 'standard':
         general_hp_plot_overlay_multiple(meta_n_clusters_list,
@@ -822,107 +816,121 @@ if __name__ == '__main__':
         # Optional for paper
         # visualize_simulatedTopMarkerNetworks()
 
-
         # info. Compare variances and means between low- and high-performing models **********************************************
-        list_perf = [element for unterliste in meta_perf_test_list for element in unterliste[:128]]
-        list_clust = [element for unterliste in meta_clustering_list for element in unterliste[:128]]
-        perf = np.array(list_perf)
-        clust = np.array(list_clust)
+        for comparison in ['clustering', 'modularity']:
 
-        chance_level = 0.2
-        valid_indices = perf > chance_level
+            if comparison == 'clustering':
+                list_clust = [element for unterliste in meta_clustering_list for element in unterliste[:128]]
+            elif comparison == 'modularity':
+                list_clust = [element for unterliste in meta_modularity_list for element in unterliste[:128]]
 
-        perf_valid = perf[valid_indices]
-        clust_valid = clust[valid_indices]
+            list_perf = [element for unterliste in meta_perf_test_list for element in unterliste[:128]]
+            perf = np.array(list_perf)
+            clust = np.array(list_clust)
 
-        split_threshold = np.mean(perf_valid)
+            chance_level = 0.2
+            valid_indices = perf > chance_level
 
-        group_low = clust_valid[perf_valid <= split_threshold]
-        group_high = clust_valid[perf_valid > split_threshold]
+            perf_valid = perf[valid_indices]
+            clust_valid = clust[valid_indices]
 
-        mean_low = np.mean(group_low)
-        mean_high = np.mean(group_high)
-        mean_total = np.mean(np.concatenate([group_low, group_high]))
+            split_threshold = np.mean(perf_valid)
 
-        std_low = np.sqrt(np.var(group_low, ddof=1))
-        std_high = np.sqrt(np.var(group_high, ddof=1))
-        std_high_total = np.sqrt(np.var(np.concatenate([group_low, group_high]), ddof=1))
+            group_low = clust_valid[perf_valid <= split_threshold]
+            group_high = clust_valid[perf_valid > split_threshold]
 
-        n_low, n_high = len(group_low), len(group_high)
+            mean_low = np.mean(group_low)
+            mean_high = np.mean(group_high)
+            mean_total = np.mean(np.concatenate([group_low, group_high]))
 
-        # 1. Levene-Test (Varianzvergleich)
-        stat_levene, p_levene = stats.levene(group_low, group_high, center='median')
+            std_low = np.sqrt(np.var(group_low, ddof=1))
+            std_high = np.sqrt(np.var(group_high, ddof=1))
+            std_high_total = np.sqrt(np.var(np.concatenate([group_low, group_high]), ddof=1))
 
-        abs_dev_low = np.abs(group_low - np.median(group_low))
-        abs_dev_high = np.abs(group_high - np.median(group_high))
+            n_low, n_high = len(group_low), len(group_high)
 
-        mean_dev_low = np.mean(abs_dev_low)
-        mean_dev_high = np.mean(abs_dev_high)
-        mean_dev_total = np.mean(np.concatenate([abs_dev_low, abs_dev_high]))
+            # 1. Levene-Test (Varianzvergleich)
+            stat_levene, p_levene = stats.levene(group_low, group_high, center='median')
 
-        ss_between = n_low * (mean_dev_low - mean_dev_total) ** 2 + n_high * (mean_dev_high - mean_dev_total) ** 2
-        ss_total = np.sum((abs_dev_low - mean_dev_total) ** 2) + np.sum((abs_dev_high - mean_dev_total) ** 2)
-        eta_squared_levene = ss_between / ss_total if ss_total > 0 else 0.0
+            abs_dev_low = np.abs(group_low - np.median(group_low))
+            abs_dev_high = np.abs(group_high - np.median(group_high))
 
-        # 2. Welch-t-Test (Mittelwertsvergleich für ungleiche Gruppengrößen & Varianzen)
-        stat_ttest, p_ttest = stats.ttest_ind(group_low, group_high, equal_var=False)
+            mean_dev_low = np.mean(abs_dev_low)
+            mean_dev_high = np.mean(abs_dev_high)
+            mean_dev_total = np.mean(np.concatenate([abs_dev_low, abs_dev_high]))
 
-        # 3. Effektstärke für t-Test berechnen (Cohen's d für ungleiche Gruppengrößen)
-        pooled_std = np.sqrt(((n_low - 1) * (std_low ** 2) + (n_high - 1) * (std_high ** 2)) / (n_low + n_high - 2))
-        cohens_d = (mean_low - mean_high) / pooled_std if pooled_std > 0 else 0.0
+            ss_between = n_low * (mean_dev_low - mean_dev_total) ** 2 + n_high * (mean_dev_high - mean_dev_total) ** 2
+            ss_total = np.sum((abs_dev_low - mean_dev_total) ** 2) + np.sum((abs_dev_high - mean_dev_total) ** 2)
+            eta_squared_levene = ss_between / ss_total if ss_total > 0 else 0.0
 
-        print("Statistical Tests:")
-        print(f"n_low: {n_low}, n_high: {n_high}")
-        print(f"mean_low: {mean_low:.4f} | mean_high: {mean_high:.4e}")
-        print(f"std_low: {std_low:.4f} | std_high: {std_high:.4e}")
-        print("-" * 30)
-        print(f"Levene-Test: W={stat_levene:.4f}, p={p_levene:.4e}, Eta2={eta_squared_levene:.4f}")
-        print(f"Welch-t-Test: t={stat_ttest:.4f}, p={p_ttest:.4e}, Cohen's d={cohens_d:.4f}")
+            # 2. Welch-t-Test (Mittelwertsvergleich für ungleiche Gruppengrößen & Varianzen)
+            stat_ttest, p_ttest = stats.ttest_ind(group_low, group_high, equal_var=False)
 
-        # WICHTIG: Variable NICHT 'dict' nennen, um Built-In-Konflikte zu vermeiden
-        results_output = OrderedDict()
-        results_output['n_low'] = n_low
-        results_output['n_high'] = n_high
-        results_output['mean_low'] = mean_low
-        results_output['mean_high'] = mean_high
-        results_output['mean_total'] = mean_total
-        results_output['std_low'] = std_low
-        results_output['std_high'] = std_high
-        results_output['std_high_total'] = std_high_total
-        results_output['stat_levene'] = stat_levene
-        results_output['eta_squared_levene'] = eta_squared_levene
-        results_output['p_levene'] = p_levene
-        results_output['stat_ttest'] = stat_ttest
-        results_output['p_ttest'] = p_ttest
-        results_output['cohens_d'] = cohens_d
+            # 3. Effektstärke für t-Test berechnen (Cohen's d für ungleiche Gruppengrößen)
+            pooled_std = np.sqrt(((n_low - 1) * (std_low ** 2) + (n_high - 1) * (std_high ** 2)) / (n_low + n_high - 2))
+            cohens_d = (mean_low - mean_high) / pooled_std if pooled_std > 0 else 0.0
 
-        file_path = os.path.join(
-            r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__low-vs-high-perf\clustering',
-            '.'.join(['_'.join(foldersToOverlay[-1].split('_')[:-1]) + '_clustering', 'json']))
-        with open(file_path, 'w') as f:
-            json.dump(results_output, f)
-        # info. Compare variances and means between low- and high-performing models **********************************************
+            df1_levene = 1  # 2 Gruppen - 1
+            df2_levene = n_low + n_high - 2
 
+            df_welch = ((std_low ** 2 / n_low) + (std_high ** 2 / n_high)) ** 2 / (
+                    ((std_low ** 2 / n_low) ** 2 / (n_low - 1)) + ((std_high ** 2 / n_high) ** 2 / (n_high - 1))
+            )
 
-if overlay == 'robustness':
-        participants = participantList # to overlay
-        general_hp_plot_overlay_multiple_robustnessTests(meta_n_clusters_list,
-                                         meta_silhouette_score_list,
-                                         meta_hp_list,
-                                         meta_perf_train_list,
-                                         meta_perf_test_list,
-                                         meta_clustering_list,
-                                         meta_modularity_list,
-                                         meta_participation_coefficient_list,
-                                         foldersToOverlay,
-                                         directory_metaOverlayVisual,
-                                         density,
-                                         participants,
-                                         sort_variable='performance',
-                                         mode='test',
-                                         alpha=0.6,
-                                         cmap_name='viridis')
+            print(f"Statistical Tests: {comparison}")
+            print(f"n_low: {n_low}, n_high: {n_high}")
+            print(f"mean_low: {mean_low:.4f} | mean_high: {mean_high:.4e}")
+            print(f"std_low: {std_low:.4f} | std_high: {std_high:.4e}")
+            print("-" * 30)
+            print(f"Welch-t-Test: t={stat_ttest:.4f}, p={p_ttest:.4e}, Cohen's d={cohens_d:.4f}")
+            print(f"{df_welch:.2f}", f"({df1_levene}, {df2_levene})")
+            print(f"Levene-Test: W={stat_levene:.4f}, p={p_levene:.4e}, Eta2={eta_squared_levene:.4f}")
+            print("-" * 30)
+            print("-" * 30)
+            print("-" * 30)
 
+            # WICHTIG: Variable NICHT 'dict' nennen, um Built-In-Konflikte zu vermeiden
+            results_output = OrderedDict()
+            results_output['n_low'] = n_low
+            results_output['n_high'] = n_high
+            results_output['mean_low'] = mean_low
+            results_output['mean_high'] = mean_high
+            results_output['mean_total'] = mean_total
+            results_output['std_low'] = std_low
+            results_output['std_high'] = std_high
+            results_output['std_high_total'] = std_high_total
+            results_output['stat_levene'] = stat_levene
+            results_output['eta_squared_levene'] = eta_squared_levene
+            results_output['p_levene'] = p_levene
+            results_output['stat_ttest'] = stat_ttest
+            results_output['p_ttest'] = p_ttest
+            results_output['cohens_d'] = cohens_d
+
+            file_path = os.path.join(
+                r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__low-vs-high-perf\clustering',
+                '.'.join(['_'.join(foldersToOverlay[-1].split('_')[:-1]) + '_clustering', 'json']))
+            with open(file_path, 'w') as f:
+                json.dump(results_output, f)
+            # info. Compare variances and means between low- and high-performing models **********************************************
+
+    if overlay == 'robustness':
+            participants = participantList # to overlay
+            general_hp_plot_overlay_multiple_robustnessTests(meta_n_clusters_list,
+                                             meta_silhouette_score_list,
+                                             meta_hp_list,
+                                             meta_perf_train_list,
+                                             meta_perf_test_list,
+                                             meta_clustering_list,
+                                             meta_modularity_list,
+                                             meta_participation_coefficient_list,
+                                             foldersToOverlay,
+                                             directory_metaOverlayVisual,
+                                             density,
+                                             participants,
+                                             sort_variable='performance',
+                                             mode='test',
+                                             alpha=0.6,
+                                             cmap_name='viridis')
 
     # # info. save meta_dicts ********************************************************************************************
     # meta_dict_path = os.path.join(r"C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__meta_dicts", f"meta_dict_{participant}_4task_{dataType}.pickle")
@@ -933,183 +941,174 @@ if overlay == 'robustness':
     #     pickle.dump(meta_dict, f)
     # # info. save meta_dicts ********************************************************************************************
 
-    # test
-    # with open(meta_dict_path, 'rb') as file:
-    #     test_dict = pickle.load(file)
+if visualizePerformanceOverTime:
+    ########################################################################################################################
+    # head. Train performance over time for one model over 3 months ********************************************************
+    ########################################################################################################################
+    # Plot train and test performance over training steps for one particular model
+    months = ['month_3', 'month_4', 'month_5']
+    # base_dir = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_256\highDim\beRNN_03\8\beRNN_03_AllTask_3-5_data_highDim_tB8_iter5_LeakyRNN_256_relu'
+    # save_fig = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_256\highDim\beRNN_03\visuals\performance_test\batchPlots\1\8'
+    base_dir = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_correctOnly_256\highDim_correctOnly\beRNN_03\4\beRNN_03_AllTask_3-5_data_highDim_correctOnly_tB4_iter1_LeakyRNN_256_relu'
+    save_fig = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_correctOnly_256\highDim_correctOnly\beRNN_03\visuals\performance_test\batchPlots\1\4'
+    os.makedirs(save_fig, exist_ok=True)
+
+    perfList = [
+        'perf_train_DM', 'perf_train_DM_Anti', 'perf_train_EF', 'perf_train_EF_Anti',
+        'perf_train_RP', 'perf_train_RP_Anti', 'perf_train_RP_Ctx1', 'perf_train_RP_Ctx2',
+        'perf_train_WM', 'perf_train_WM_Anti', 'perf_train_WM_Ctx1', 'perf_train_WM_Ctx2'
+    ]
+
+    # Load data from all months into memory first
+    data_by_month = {}
+    for month in months:
+        month_path = os.path.join(base_dir, f"model_{month}", 'log.json')
+        if os.path.exists(month_path):
+            with open(month_path, 'r') as f:
+                data_by_month[month] = json.load(f)
+        else:
+            print(f"Warning: File not found: {month_path}")
+            data_by_month[month] = {}
+
+    # Setup the plot
+    fig, ax = plt.subplots(figsize=(8, 3))
+    colors = plt.cm.viridis(np.linspace(0, 1, len(perfList)))
+
+    month_lengths = []
+
+    # Process and plot each task as a single consecutive timeline
+    for i, perf in enumerate(perfList):
+        stacked_y = []
+
+        # Concatenate the lists sequentially
+        for month in months:
+            if perf in data_by_month[month]:
+                month_data = data_by_month[month][perf]
+                stacked_y.extend(month_data)
+
+                # Save the length of data from month_3 and month_4 on the first loop iteration
+                if i == 0:
+                    month_lengths.append(len(month_data))
+
+        # Skip plotting if no data was found for this task across any month
+        if not stacked_y:
+            continue
+
+        # Downsample
+        downsampled_y = stacked_y[::39]
+        downsampled_x = list(range(0, len(stacked_y), 39))
+
+        label_name = perf.replace('perf_train_', '')
+
+        # Plot the full stitched trajectory
+        ax.plot(downsampled_x, downsampled_y, label=label_name, color=colors[i], linewidth=2, alpha=0.8)
+
+    # Add visual dividers
+    if month_lengths:
+        current_boundary = 0
+        for idx, length in enumerate(month_lengths[:-1]):  # No divider needed after the last month
+            current_boundary += length
+            ax.axvline(x=current_boundary, color='gray', linestyle='--', alpha=0.5, linewidth=1.5)
+
+            # Annotate labels above the dividers
+            # ax.text(current_boundary, 1.01, f"End of {months[idx].replace('_', ' ').title()}",
+            #         color='gray', fontsize=10, ha='center', fontweight='bold')
+
+    # Plot styling
+    ax.set_title("Consecutive Train Performance across Months 3, 4, and 5", fontsize=14, fontweight='bold')
+    ax.set_xlabel("Steps", fontsize=12)
+    ax.set_ylabel("Performance", fontsize=12)
+    ax.set_ylim(0, 1.05)
+    ax.grid(True, linestyle=':', alpha=0.3)
+
+    # Single elegant legend for tasks
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+
+    plt.tight_layout()
+    plt.show()
+
+    save_path = os.path.join(save_fig, 'perf_train_overTime.pdf')
+    fig.savefig(save_path, dpi=300, bbox_inches='tight')
 
 
-# ########################################################################################################################
-# # head. Train performance over time for one model over 3 months ********************************************************
-# ########################################################################################################################
-# # Plot train and test performance over training steps for one particular model
-# import json
-# import os
-# import matplotlib.pyplot as plt
-# import numpy as np
-#
-# months = ['month_3', 'month_4', 'month_5']
-# # base_dir = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_256\highDim\beRNN_03\8\beRNN_03_AllTask_3-5_data_highDim_tB8_iter5_LeakyRNN_256_relu'
-# # save_fig = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_256\highDim\beRNN_03\visuals\performance_test\batchPlots\1\8'
-# base_dir = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_correctOnly_256\highDim_correctOnly\beRNN_03\4\beRNN_03_AllTask_3-5_data_highDim_correctOnly_tB4_iter1_LeakyRNN_256_relu'
-# save_fig = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\show-grid_multi_beRNN_03_highDim_correctOnly_256\highDim_correctOnly\beRNN_03\visuals\performance_test\batchPlots\1\4'
-# os.makedirs(save_fig, exist_ok=True)
-#
-# perfList = [
-#     'perf_train_DM', 'perf_train_DM_Anti', 'perf_train_EF', 'perf_train_EF_Anti',
-#     'perf_train_RP', 'perf_train_RP_Anti', 'perf_train_RP_Ctx1', 'perf_train_RP_Ctx2',
-#     'perf_train_WM', 'perf_train_WM_Anti', 'perf_train_WM_Ctx1', 'perf_train_WM_Ctx2'
-# ]
-#
-# # Load data from all months into memory first
-# data_by_month = {}
-# for month in months:
-#     month_path = os.path.join(base_dir, f"model_{month}", 'log.json')
-#     if os.path.exists(month_path):
-#         with open(month_path, 'r') as f:
-#             data_by_month[month] = json.load(f)
-#     else:
-#         print(f"Warning: File not found: {month_path}")
-#         data_by_month[month] = {}
-#
-# # Setup the plot
-# fig, ax = plt.subplots(figsize=(8, 3))
-# colors = plt.cm.viridis(np.linspace(0, 1, len(perfList)))
-#
-# month_lengths = []
-#
-# # Process and plot each task as a single consecutive timeline
-# for i, perf in enumerate(perfList):
-#     stacked_y = []
-#
-#     # Concatenate the lists sequentially
-#     for month in months:
-#         if perf in data_by_month[month]:
-#             month_data = data_by_month[month][perf]
-#             stacked_y.extend(month_data)
-#
-#             # Save the length of data from month_3 and month_4 on the first loop iteration
-#             if i == 0:
-#                 month_lengths.append(len(month_data))
-#
-#     # Skip plotting if no data was found for this task across any month
-#     if not stacked_y:
-#         continue
-#
-#     # Downsample
-#     downsampled_y = stacked_y[::39]
-#     downsampled_x = list(range(0, len(stacked_y), 39))
-#
-#     label_name = perf.replace('perf_train_', '')
-#
-#     # Plot the full stitched trajectory
-#     ax.plot(downsampled_x, downsampled_y, label=label_name, color=colors[i], linewidth=2, alpha=0.8)
-#
-# # Add visual dividers
-# if month_lengths:
-#     current_boundary = 0
-#     for idx, length in enumerate(month_lengths[:-1]):  # No divider needed after the last month
-#         current_boundary += length
-#         ax.axvline(x=current_boundary, color='gray', linestyle='--', alpha=0.5, linewidth=1.5)
-#
-#         # Annotate labels above the dividers
-#         # ax.text(current_boundary, 1.01, f"End of {months[idx].replace('_', ' ').title()}",
-#         #         color='gray', fontsize=10, ha='center', fontweight='bold')
-#
-# # Plot styling
-# ax.set_title("Consecutive Train Performance across Months 3, 4, and 5", fontsize=14, fontweight='bold')
-# ax.set_xlabel("Steps", fontsize=12)
-# ax.set_ylabel("Performance", fontsize=12)
-# ax.set_ylim(0, 1.05)
-# ax.grid(True, linestyle=':', alpha=0.3)
-#
-# # Single elegant legend for tasks
-# ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
-#
-# plt.tight_layout()
-# plt.show()
-#
-# save_path = os.path.join(save_fig, 'perf_train_overTime.pdf')
-# fig.savefig(save_path, dpi=300, bbox_inches='tight')
-#
-#
-# ########################################################################################################################
-# # head. Test performance over time for one model over 3 months *********************************************************
-# ########################################################################################################################
-# perfList = [
-#     'perf_DM', 'perf_DM_Anti', 'perf_EF', 'perf_EF_Anti',
-#     'perf_RP', 'perf_RP_Anti', 'perf_RP_Ctx1', 'perf_RP_Ctx2',
-#     'perf_WM', 'perf_WM_Anti', 'perf_WM_Ctx1', 'perf_WM_Ctx2'
-# ]
-#
-# # Load data from all months into memory first
-# data_by_month = {}
-# for month in months:
-#     month_path = os.path.join(base_dir, f"model_{month}", 'log.json')
-#     if os.path.exists(month_path):
-#         with open(month_path, 'r') as f:
-#             data_by_month[month] = json.load(f)
-#     else:
-#         print(f"Warning: File not found: {month_path}")
-#         data_by_month[month] = {}
-#
-# # Setup the plot
-# fig, ax = plt.subplots(figsize=(8, 3))
-# colors = plt.cm.viridis(np.linspace(0, 1, len(perfList)))
-#
-# month_lengths = []
-#
-# # Process and plot each task as a single consecutive timeline
-# for i, perf in enumerate(perfList):
-#     stacked_y = []
-#
-#     # Concatenate the lists sequentially
-#     for month in months:
-#         if perf in data_by_month[month]:
-#             month_data = data_by_month[month][perf]
-#             stacked_y.extend(month_data)
-#
-#             # Save the length of data from month_3 and month_4 on the first loop iteration
-#             if i == 0:
-#                 month_lengths.append(len(month_data))
-#
-#     # Skip plotting if no data was found for this task across any month
-#     if not stacked_y:
-#         continue
-#
-#     # Downsample
-#     downsampled_y = stacked_y
-#     downsampled_x = list(range(0, len(stacked_y), 1))
-#
-#     label_name = perf.replace('perf_', '')
-#
-#     # Plot the full stitched trajectory
-#     ax.plot(downsampled_x, downsampled_y, label=label_name, color=colors[i], linewidth=2, alpha=0.8)
-#
-# # Add visual dividers
-# if month_lengths:
-#     current_boundary = 0
-#     for idx, length in enumerate(month_lengths[:-1]):  # No divider needed after the last month
-#         current_boundary += length
-#         ax.axvline(x=current_boundary, color='gray', linestyle='--', alpha=0.5, linewidth=1.5)
-#
-#         # Annotate labels above the dividers
-#         # ax.text(current_boundary, 1.01, f"End of {months[idx].replace('_', ' ').title()}",
-#         #         color='gray', fontsize=10, ha='center', fontweight='bold')
-#
-# # Plot styling
-# ax.set_title("Consecutive Test Performance across Months 3, 4, and 5", fontsize=14, fontweight='bold')
-# ax.set_xlabel("Steps", fontsize=12)
-# ax.set_ylabel("Performance", fontsize=12)
-# ax.set_ylim(0, 1.05)
-# ax.grid(True, linestyle=':', alpha=0.3)
-#
-# # Single elegant legend for tasks
-# ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
-#
-# plt.tight_layout()
-# plt.show()
-#
-# save_path = os.path.join(save_fig, 'perf_test_overTime.pdf')
-# fig.savefig(save_path, dpi=300, bbox_inches='tight')
+    ########################################################################################################################
+    # head. Test performance over time for one model over 3 months *********************************************************
+    ########################################################################################################################
+    perfList = [
+        'perf_DM', 'perf_DM_Anti', 'perf_EF', 'perf_EF_Anti',
+        'perf_RP', 'perf_RP_Anti', 'perf_RP_Ctx1', 'perf_RP_Ctx2',
+        'perf_WM', 'perf_WM_Anti', 'perf_WM_Ctx1', 'perf_WM_Ctx2'
+    ]
+
+    # Load data from all months into memory first
+    data_by_month = {}
+    for month in months:
+        month_path = os.path.join(base_dir, f"model_{month}", 'log.json')
+        if os.path.exists(month_path):
+            with open(month_path, 'r') as f:
+                data_by_month[month] = json.load(f)
+        else:
+            print(f"Warning: File not found: {month_path}")
+            data_by_month[month] = {}
+
+    # Setup the plot
+    fig, ax = plt.subplots(figsize=(8, 3))
+    colors = plt.cm.viridis(np.linspace(0, 1, len(perfList)))
+
+    month_lengths = []
+
+    # Process and plot each task as a single consecutive timeline
+    for i, perf in enumerate(perfList):
+        stacked_y = []
+
+        # Concatenate the lists sequentially
+        for month in months:
+            if perf in data_by_month[month]:
+                month_data = data_by_month[month][perf]
+                stacked_y.extend(month_data)
+
+                # Save the length of data from month_3 and month_4 on the first loop iteration
+                if i == 0:
+                    month_lengths.append(len(month_data))
+
+        # Skip plotting if no data was found for this task across any month
+        if not stacked_y:
+            continue
+
+        # Downsample
+        downsampled_y = stacked_y
+        downsampled_x = list(range(0, len(stacked_y), 1))
+
+        label_name = perf.replace('perf_', '')
+
+        # Plot the full stitched trajectory
+        ax.plot(downsampled_x, downsampled_y, label=label_name, color=colors[i], linewidth=2, alpha=0.8)
+
+    # Add visual dividers
+    if month_lengths:
+        current_boundary = 0
+        for idx, length in enumerate(month_lengths[:-1]):  # No divider needed after the last month
+            current_boundary += length
+            ax.axvline(x=current_boundary, color='gray', linestyle='--', alpha=0.5, linewidth=1.5)
+
+            # Annotate labels above the dividers
+            # ax.text(current_boundary, 1.01, f"End of {months[idx].replace('_', ' ').title()}",
+            #         color='gray', fontsize=10, ha='center', fontweight='bold')
+
+    # Plot styling
+    ax.set_title("Consecutive Test Performance across Months 3, 4, and 5", fontsize=14, fontweight='bold')
+    ax.set_xlabel("Steps", fontsize=12)
+    ax.set_ylabel("Performance", fontsize=12)
+    ax.set_ylim(0, 1.05)
+    ax.grid(True, linestyle=':', alpha=0.3)
+
+    # Single elegant legend for tasks
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+
+    plt.tight_layout()
+    plt.show()
+
+    save_path = os.path.join(save_fig, 'perf_test_overTime.pdf')
+    fig.savefig(save_path, dpi=300, bbox_inches='tight')
 
 

@@ -1,8 +1,9 @@
+# ======================================================================================
+# Linear Mixed Model to compare model internal representations over time between subjects
+# ======================================================================================
 library(tidyverse)
 library(lme4)
 library(lmerTest)
-
-
 
 target_dir <- "C:/Users/oliver.frank/Desktop/PyProjects/beRNN_v1/data/"
 
@@ -22,7 +23,6 @@ full_dataset <- file_list %>%
 
 # Preview the gathered data
 head(full_dataset)
-
 
 
 # Test: Significant differences between months within subjects *****************

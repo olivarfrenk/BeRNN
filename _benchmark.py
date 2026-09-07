@@ -1,12 +1,18 @@
-"""Collections of tasks."""
-
 from __future__ import division
 
 import os
-
 import six
 import numpy as np
+
+import tools
+from _training import get_default_hp
 from tools import rules_dict
+
+'''
+Roles: 
+- Creates benchmark dataset from Yang et al. (2019)
+- Saves benchmark dataset
+'''
 
 # Store indices of rules
 rule_index_map = dict()
@@ -15,26 +21,21 @@ for ruleset, rules in rules_dict.items():
     for ind, rule in enumerate(rules):
         rule_index_map[ruleset][rule] = ind
 
-
 def get_num_ring(ruleset):
     '''get number of stimulus rings'''
     return 3 if ruleset=='oicdmc' else 2
-
 
 def get_num_rule(ruleset):
     '''get number of rules'''
     return len(rules_dict[ruleset])
 
-
 def get_rule_index(rule, config):
     '''get the input index for the given rule'''
     return rule_index_map[config['ruleset']][rule]+config['rule_start']
 
-
 def get_dist(original_dist):
     '''Get the distance in periodic boundary conditions'''
     return np.minimum(abs(original_dist),2*np.pi-abs(original_dist))
-
 
 class Trial(object):
     """Class representing a batch of trials."""
@@ -185,7 +186,6 @@ class Trial(object):
             y[ind] = 1.
         return y
 
-
 def test_init(config, mode, **kwargs):
     '''
     Test initialization of model. mode is not actually used
@@ -200,7 +200,6 @@ def test_init(config, mode, **kwargs):
     trial.add('fix_in', offs=fix_offs)
 
     return trial
-
 
 def delaygo_(config, mode, anti_response, **kwargs):
     '''
@@ -1284,7 +1283,6 @@ def delaymatchcategory_original(config, mode, **kwargs):
 
     return trial
 
-
 rule_mapping = {'testinit': test_init,
                 'reactgo': reactgo,
                 'delaygo': delaygo,
@@ -1366,8 +1364,6 @@ def generate_trials(rule, hp, mode, noise_on=True, **kwargs):
 if __name__ == '__main__':
 
     # head. Create and save trials - only load them for benchmark training - control sample size
-    import tools
-    from _training import get_default_hp
     numberOfBatches = 50
 
     # attention: standard hp ##########################################################################################

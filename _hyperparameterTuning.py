@@ -1,14 +1,5 @@
-########################################################################################################################
-# head: hyperparameterTuning ###########################################################################################
-########################################################################################################################
-# Random Grid Search of different hyperparameter sets for automated accumulated model training.
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 from __future__ import division
 import warnings
-
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import os
@@ -23,6 +14,11 @@ import json
 import _training
 import tools
 
+'''
+Roles: 
+- Random grid search of different hyperparameter sets 
+- Operates locally, on cluster (default) or on VM (hitkip_local)
+'''
 
 ########################################################################################################################
 # Create HP combinations and randomly choose a selection
@@ -35,7 +31,6 @@ def sample_param_combinations(param_grid, sample_size):
         sampled_combinations.append(combo)
     return sampled_combinations
 
-
 def create_repeated_param_combinations(param_grid, sample_size):
     # Create the single combination of parameters
     keys, values = zip(*param_grid.items())
@@ -45,7 +40,6 @@ def create_repeated_param_combinations(param_grid, sample_size):
     repeated_combinations = [single_combination for _ in range(sample_size)]
 
     return repeated_combinations
-
 
 def extract_hpSets_4robustnessTest(model_directory):
     # --- Settings ---
@@ -90,7 +84,6 @@ def extract_hpSets_4robustnessTest(model_directory):
             print(f"Saved: {new_hp_filename}")
         else:
             print(f"WARNING: hp.json not found in {model_dir}")
-
 
 # info. Choose local or cluster training
 cluster, hitkip_local = True, False
@@ -200,11 +193,10 @@ else:
 
     # Randomly sample combinations
     sampled_combinations = sample_param_combinations(adjParams,
-                                                     10000)  # info for paper. drew 128 ranomd hp sets from pool of 10k
+                                                     10000)  # info. random hp set sampling
 
     # # Create one combination and repeat it according to defined number
     # sampled_combinations = create_repeated_param_combinations(adjParams, 5)
-
 
 # # info: Save paramCombinations locally for cluster training ####################################################################
 # dir = fr'C:\Users\oliver.frank\Desktop\PyProjects\beRNN_v1\paramCombinations_{adjParams["trainingYear_Month"][0]}'
@@ -231,7 +223,6 @@ else:
 #         with open(f'sampled_combinations_{participant}_{paramBatch}.json', 'w') as f:
 #             json.dump(sampled_combinations, f, indent=4)
 # # info: Adjust paramCombinations locally for cluster training ##################################################################
-
 
 # Training #############################################################################################################
 # Initialize list for all training times for each model

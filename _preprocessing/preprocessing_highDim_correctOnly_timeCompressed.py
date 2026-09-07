@@ -1,14 +1,3 @@
-########################################################################################################################
-# info: preprocessing_CorrectOnly
-########################################################################################################################
-# Preprocess the cogntive-behavioral data collected from Gorilla Experimenter into the form that can be used to train the
-# models.
-
-# fix: Average reaction times for error to correct trials - see preprocessing_highDim_correctOnly.py
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 import numpy as np
 import pandas as pd
 import tools
@@ -17,6 +6,11 @@ import json
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+'''
+Roles:
+- Preprocess the cogntive-behavioral data collected into the form that can be used to train the models
+'''
 
 ########################################################################################################################
 # Predefine functions

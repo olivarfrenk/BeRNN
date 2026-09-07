@@ -48,7 +48,6 @@ df_final <- df_final %>%
   )
 
 
-
 # ======================================================================================
 # Calculate contrasts
 # ======================================================================================
@@ -77,7 +76,6 @@ posthoc_acc <- emmeans(model_acc, pairwise ~ Month, pbkrtest.limit = 5140)
 # show contrast results
 print(posthoc_rt$contrasts)
 print(posthoc_acc$contrasts)
-
 
 
 # ======================================================================================
@@ -137,7 +135,6 @@ plot(emm_rt_task, comparisons = TRUE) +
   labs(title = "Influence of task on rt (cleaned from months)",
        x = "EMMean",
        y = "Complexity level")
-
 
 
 ################################################################################
@@ -216,10 +213,6 @@ cat("\nThe objectively most stable window is:", final_eval_results$Gruppe[1],
     "with a score of", round(final_eval_results$TotalScore[1], 3))
 
 
-
-
-
-
 ################################################################################
 # Visualization of Design Stability (Complexity over Months)
 ################################################################################
@@ -250,7 +243,6 @@ plot_comp_stability <- ggplot(comp_stability_plot, aes(x = mean_comp, y = Month)
 
 # Display plot
 print(plot_comp_stability)
-
 
 
 ################################################################################
@@ -284,7 +276,6 @@ plot_acc <- ggplot(df_count_acc, aes(x = Month, y = count)) +
 # Display plots sequentially
 print(plot_rt)
 print(plot_acc)
-
 
 
 ################################################################################
@@ -326,3 +317,5 @@ plot_acc_facet <- ggplot(df_counts_acc, aes(x = Month, y = count, fill = Partici
 # Display plots
 print(plot_rt_facet)
 print(plot_acc_facet)
+
+

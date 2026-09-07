@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Compute first level models for SoSense dataset using nilearn
-
-@author: johannes.wiesner
-"""
-
 import os
 from nilearn.glm.first_level import first_level_from_bids
 from bids.layout import BIDSLayout
@@ -18,6 +10,11 @@ import pandas as pd
 from nilearn.image import mean_img
 from nilearn.plotting import plot_stat_map
 from nilearn.glm import threshold_stats_img
+
+'''
+Roles:
+- Compute first level models for brain dataset using nilearn
+'''
 
 ###############################################################################
 ## Fixed settings for all tasks

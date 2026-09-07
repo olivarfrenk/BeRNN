@@ -1,12 +1,3 @@
-########################################################################################################################
-# info: preprocessing_lowDim
-########################################################################################################################
-# Preprocess the cogntive-behavioral data collected from Gorilla Experimenter into the form that can be used to train the
-# models.
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 import numpy as np
 import pandas as pd
 import tools
@@ -16,7 +7,10 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-# fix: Delete no response
+'''
+Roles:
+- Preprocess the cogntive-behavioral data collected into the form that can be used to train the models
+'''
 
 ########################################################################################################################
 # Predefine functions

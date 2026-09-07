@@ -1,20 +1,10 @@
-########################################################################################################################
-# info: network
-########################################################################################################################
-# All pre-defined network architectures used to train the different models and additional helper functions.
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 from __future__ import division
-
 import os
 import numpy as np
 # import matplotlib.pyplot as plt
 # import pickle
 
 import warnings
-
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # import tensorflow as tf
@@ -37,9 +27,13 @@ from tensorflow.python.ops.rnn_cell_impl import RNNCell
 
 import tools
 
+'''
+Roles:
+- Defines network architectures for _training.py
+'''
 
 ########################################################################################################################
-# Pre-Allocate helper functions
+# head. helper functions
 ########################################################################################################################
 def is_weight(v):
     """Check if Tensorflow variable v is a connection weight."""
@@ -170,7 +164,6 @@ def random_orthogonal(n, rng=None):
     Q *= np.sign(np.diag(R))
     return Q
 
-# info: lowDIM section
 def popvec_lowDIM(y):
     """Population vector read out.
 
@@ -230,7 +223,7 @@ def get_perf_lowDIM(y_hat, y_loc):
 
 
 ########################################################################################################################
-# Network architectures
+# head. Network architectures
 ########################################################################################################################
 class LeakyRNNCell(RNNCell):
     """The most basic RNN cell.

@@ -1,12 +1,3 @@
-########################################################################################################################
-# info: Clustering _analysis
-########################################################################################################################
-# Analyze how units are involved in various tasks
-########################################################################################################################
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 from __future__ import division
 
 import os
@@ -26,6 +17,10 @@ from tools import rule_name, createSplittedDatasets, create_cMask
 from network import get_perf
 from _analysis import variance
 
+'''
+Roles:
+- Analyzes how units are involved in tasks
+'''
 
 # Colors used for clusters
 kelly_colors = \
@@ -93,13 +88,12 @@ def compute_rdm(task_matrix, rdm_metric, normalize=False):
 
     return rdm, rdm_vector
 
-
 class Analysis(object):
     def __init__(self, data_dir, model_dir, layer, rdm_metric, mode, monthsConsidered, data_type, networkAnalysis, normalization_method='sum'):
 
         hp = tools.load_hp(model_dir)
 
-        # future: multiLayer *******************************************************************************************
+        # multiLayer *******************************************************************************************
         # # Do a task variance _analysis for each hidden layer
         # if hp.get('multiLayer') == True:
         #     numberOfLayers = len(hp['n_rnn_per_layer'])
@@ -202,45 +196,6 @@ class Analysis(object):
             else:
                 raise NotImplementedError()
 
-            # info. Yang legacy clustering - needs variance filtering, will crash otherwise
-            # X = h_normvar_all
-            # range2 = len(X) if len(X) < 30 else 30
-            # # Choose number of clusters that maximize silhouette score
-            # n_clusters = range(2, range2)  # attention: 2,30
-            # scores = list()
-            # labels_list = list()
-            # for n_cluster in n_clusters:
-            #     # clustering = AgglomerativeClustering(n_cluster, affinity='cosine', linkage='average')
-            #     clustering = KMeans(n_cluster, algorithm='full', n_init=20, random_state=0)
-            #     clustering.fit(X)  # n_samples, n_features = n_units, n_rules/n_epochs
-            #     labels = clustering.labels_  # cluster labels
-            #     score = metrics.silhouette_score(X, labels)
-            #
-            #     scores.append(score)
-            #     labels_list.append(labels)
-            #
-            # scores = np.array(scores)
-
-            # # Heuristic elbow method
-            # # Choose the number of cluster when Silhouette score first falls
-            # if data_type == 'rule':
-            #     # fallback = False
-            #     if len(scores) != 0:
-            #         i = np.argmax(scores)
-            #         labels = labels_list[i]
-            #     else:
-            #         # another fallback
-            #         i = 0
-            #         scores = [0.0]
-            #         labels = np.array([0, 1])
-            # else:
-            #     i = n_clusters.index(10)
-
-            # # if fallback == False:
-            # # labels = labels_list[i]
-            # n_cluster = n_clusters[i]
-            # print('Choosing {:d} clusters'.format(n_cluster))
-
             # Sort clusters by its task preference (important for consistency across nets)
             # Task preference is the task vector with highest sum of activity over all its units (for that cluster assigned by kmeans)
             # The labeled clusters have no intrinsic meaning
@@ -278,12 +233,6 @@ class Analysis(object):
             self.rdm_metric = rdm_metric
             # self.rdm = rdm.tolist() # not ideal for saving as json
             # self.rdm_vector = rdm_vector # not ideal for saving as json
-
-            # info. Yang legacy clustering
-            # self.n_clusters = n_clusters
-            # self.scores = scores
-            # self.labels = labels
-            # self.unique_labels = np.unique(labels)
 
             self.h_corr_all = h_corr_all
             self.h_var_all = h_var_all # legacy: h_var_all
@@ -492,7 +441,6 @@ class Analysis(object):
                         # h = sess.run(model.train_step,
                         #              feed_dict=feed_dict)  # info: Trainables are actualized - train_step should represent the step in _training.py and the global_step in network.py
                         #
-
 
                         # epochs = tools.find_epochs(x)
                         #
@@ -1051,4 +999,5 @@ class Analysis(object):
 
 if __name__ == '__main__':
     pass
+
 

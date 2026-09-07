@@ -1,7 +1,10 @@
+# ======================================================================================
+# Linear Mixed Model to compare error distributions between subjects within tasks
+# ======================================================================================
 library(dplyr)
-library(nnet)       # For Fixed-Effects Multinomial
-library(brms)       # For Bayesian Mixed-Effects Multinomial (Optional)
-library(car)        # For Wald Anova tests
+library(nnet)
+library(brms)
+library(car)
 
 # Read raw data (keeping counts intact)
 data_path <- "C:\\Users\\oliver.frank\\Desktop\\PyProjects\\Data\\all_tasks_flat_counts.csv"
@@ -67,3 +70,5 @@ for (current_task in unique_tasks) {
   # print(summary(model_mixed))
   
 }
+
+

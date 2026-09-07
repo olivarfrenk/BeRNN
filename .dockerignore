@@ -18,5 +18,5 @@ _hyperparameterOverview.py
 _hyperparameterOverview_overlays.py
 _multipleNetworkAnalysis.py
 _singleNetworkAnalysis.py
-LMM_behavior.R
-LMM_marker.R
+_behavior/LMM_behavior.R
+_behavior/LMM_marker.R

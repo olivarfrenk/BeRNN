@@ -1,11 +1,17 @@
 import nibabel as nib
-import os
 import pandas as pd
 import numpy as np
 from nilearn.image import resample_to_img, new_img_like
 from nilearn.maskers import NiftiLabelsMasker
+import os
+import re
 
 from _analysis import clustering
+
+'''
+Roles:
+- Computes brain parcellations of global and subnetworks
+'''
 
 # Prepare atlas ******************************************************************
 # Define paths to your already existing local atlas files
@@ -212,13 +218,6 @@ print("\nRDM processing loop completed successfully!")
 # info. Concatenate the parcellated task vectors along each other ***************************
 
 
-
-
-
-
-import os
-import re
-
 # Define the path to your RDM directory
 directory_rdm = r'W:\group_csp\analyses\oliver.frank\_brainModels\functional_matrices_rdm'
 
@@ -263,4 +262,5 @@ else:
                 print(f"Skipped (Pattern mismatch): {filename}")
 
     print(f"\nDone! Successfully renamed {rename_count} files.")
+
 

@@ -1,10 +1,3 @@
-########################################################################################################################
-# head: singleNetworkAnalysis ##########################################################################################
-########################################################################################################################
-
-########################################################################################################################
-# Import necessary libraries and modules
-########################################################################################################################
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -26,6 +19,8 @@ from networkx.algorithms.community import greedy_modularity_communities, modular
 import tensorflow as tf
 from collections import OrderedDict
 from pathlib import Path
+from scipy.stats import ttest_ind, ks_2samp
+import seaborn as sns
 
 plt.ioff() # prevents windows to pop up when figs and plots are created
 
@@ -35,6 +30,16 @@ from network import Model
 import tools
 from tools import rule_name, load_pickle
 
+# attention: script is outdated for evaluating task representations
+#  use _multipleNetworkAnalysis.py or _hyperparameterOverview.py (for preprocessing) instead
+
+'''
+Roles:
+- Plots train/test performance and cost for one defined model 
+- Computes and visualizes functional and structural (model weights) correlation matrices
+- Creates and visualizes task variance and lesioning plots - can compare subjects
+- Creates topological markers and saves as dicts (outdated)
+'''
 
 selected_hp_keys = ['participant', 'rnn_type', 'data', 'multiLayer', 'n_rnn_per_layer', 'activations_per_layer',
                     'activation', 'optimizer', 'loss_type', 'batch_size', 'l1_h', 'l2_h', 'l1_weight', 'l2_weight',
@@ -148,18 +153,8 @@ def define_data_folder(split_parts):
     return data_folder
 
 
-# **********************************************************************************************************************
-# attention: Complete script is outdated - especially for evaluating task representations and top. marker ##############
-# **********************************************************************************************************************
-
-
 ########################################################################################################################
-# Performance - Individual network
-########################################################################################################################
-# Note to visualization of training and test performance: The test data gives for maxsteps of 1e7 5000 performance data
-# points, each representing 800 evaluated trials. The training data gives for maxsteps of 1e7 25000 performance data points,
-# each representing 40 trained trials. So I should gather 5 data points of the training data to have the same smoothness
-# in the plots, window size = 5
+# head. Performance - Individual network
 ########################################################################################################################
 def plot_performanceprogress_test_BeRNN(model_dir, figurePath_overview, model, figurePath, rule_plot=None):
     # Plot Evaluation Progress
@@ -436,7 +431,7 @@ def plot_cost_train_BeRNN(model_dir, figurePath_overview, model, figurePath, rul
 
 
 ########################################################################################################################
-# Functional & Structural Correlation  - Individual networks
+# head. Functional & Structural Correlation  - Individual networks
 ########################################################################################################################
 def compute_functionalCorrelation(model_dir, threshold, monthsConsidered, mode, figurePath, analysis):
     # different correlation function used in all published results - see analysis/variance.py line 156/157
@@ -660,7 +655,6 @@ def compute_structuralCorrelation(model_dir, figurePath, monthsConsidered, mode)
 
             plt.show()
             # plt.close()
-
 
 # info: Adapted Yang functions #########################################################################################
 class TaskSetAnalysis(object):
@@ -1163,10 +1157,9 @@ def plot_group_rdm_mds(directory, mode, sort_variable, rdm_metric, numberOfModel
         plt.close()
 # info: Adapted Yang functions #########################################################################################
 
-
 if __name__ == "__main__":
     ########################################################################################################################
-    # Create Overview and topologcial Marker
+    # head. Create Overview and topologcial Marker
     ########################################################################################################################
     def figureSceletton(model_column_widths):
         total_cols = sum(model_column_widths)
@@ -1363,10 +1356,9 @@ if __name__ == "__main__":
                 print("Error: ", e)
 
 
-
-        # info: ################################################################################################################
-        # info: Distribution plot ##############################################################################################
-        # info: ################################################################################################################
+        #################################################################################################################
+        # head. Distribution plot
+        #################################################################################################################
 
         # Collect all top Marker files into one destination
         _iterationList = os.listdir(_finalPath) # info: Folder of several iterations for one training batch of one participant
@@ -1491,11 +1483,9 @@ if __name__ == "__main__":
 
 
         if comparison == True:
-            # # info: ################################################################################################################
-            # # info: Comparison - Only apply after previous _analysis ################################################################
-            # # info: ################################################################################################################
-            from scipy.stats import ttest_ind, ks_2samp
-            import seaborn as sns
+            # #################################################################################################################
+            # # head: Comparison - Only apply after _analysis
+            # #################################################################################################################
 
             # Define variables for topological marker distribution comparison
             participant1, batch1 = 'beRNN_01', '32'
@@ -1623,9 +1613,7 @@ if __name__ == "__main__":
             with open(os.path.join(r"C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\__topologicalMarker_pValue_lists", f'topologicalMarker_dict_{participant}_{dataType}_{threshold}.json'), 'w') as fp:
                 json.dump(topologicalMarker_dict_beRNN, fp)
 
-
-
-# # info: Specific creation of meta topologicalMarker_dict_beRNN *********************************************************
+# # info: Specific creation of meta topologicalMarker_dict_beRNN
 # participantList = ['beRNN_01', 'beRNN_02', 'beRNN_03', 'beRNN_04', 'beRNN_05']
 # # threshold = 1.0
 #

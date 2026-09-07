@@ -5,9 +5,11 @@ from scipy.stats import pearsonr, spearmanr, rankdata
 
 import tools
 
-# info: ################################################################################################################
-# info: Create autocorrelation plot for collected data of defined participant and month
-# info: ################################################################################################################
+'''
+Roles: 
+- Create autocorrelation plot for collected data of defined participant and month
+'''
+
 # List of the subdirectories
 path = 'C:\\Users\\oliver.frank\\Desktop\\PyProjects'
 preprocessedData_path = os.path.join(path, 'Data', 'beRNN_03', 'data_highDim')
@@ -172,11 +174,9 @@ def plot_sequence_autocorr_grid(data_dict, month, max_lag=100, figsize=(15, 12),
 plot_sequence_autocorr_grid(dict_y, month, method="pearson")  # default
 
 
-
-# info: ################################################################################################################
-# info: train/test-gap difference X autocorrelation-gap difference
-# info: ################################################################################################################
-
+#################################################################################################################
+# head. train/test-gap difference X autocorrelation-gap difference
+#################################################################################################################
 # Calculate difference between train perf of trained model on month 4 and test perf on month 6 ~ 50 data points - task-wise
 model_dir = r'C:\Users\oliver.frank\Desktop\PyProjects\beRNNmodels\autoCorrelationTest_2\highDim_correctOnly_3stimTC\beRNN_03\01\beRNN_03_Alltask_4-6_data_highDim_correctOnly_3stimTC_iteration1_LeakyRNN_diag_256_softplus'
 months = ['model_month_4', 'model_month_5', 'model_month_6']
@@ -197,7 +197,6 @@ for month in months:
         test_perf_dict[task] = log['perf_' + task]
 
     month_dict_of_test_perf_dict[month] = test_perf_dict
-
 
 # Give length of very last task in last month
 numberOfDataPoints = len(month_dict_of_test_perf_dict[month][task])
