@@ -10,7 +10,7 @@
 7. Compare the internal representational metrics to brain embedded graphs (fMRI based)
 
 
-## Hierarchy of processes
+## Hierarchy of actions
 0. preprocessing & dataAugmentation.py for data preperation
 1. training.py & hyperparameterTuning.py for training models
 2. hyperparameterOverview.py & hyperparameterOverview_overlays.py for performance and topological marker visualization
@@ -22,7 +22,7 @@
 - Dockerfile defines dependencies
 - docker-build.yaml builds the .dockerignore reduced image whenever repo is pushed to github
 - latest image is pushed to docker hub (actions with secrets)
-- from WM manually pull image from hub
+- from VM manually pull image from hub
 - initalize container with fine-tuned hps defined by config files w. different shell scripts
 
 
