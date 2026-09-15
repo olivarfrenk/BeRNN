@@ -2,4 +2,9 @@ hps/
 masks/
 pngs/
 data/
+.github/
+.idea/
+.vscode/
 
+.dockerignore
+.gitignore
