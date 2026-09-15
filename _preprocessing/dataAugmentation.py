@@ -7,7 +7,6 @@ import glob
 # import tools
 
 '''
-Roles:
 - Augments data with Rotation, Mirrored, Segmentation, Randomization (not used for published models)
 '''
 

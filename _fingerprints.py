@@ -12,7 +12,6 @@ from _training import apply_density_threshold
 from tools import load_hp, load_pickle
 
 '''
-Roles: 
 - Compares functional correlation matrices on RNN/RNN or Brain/Brain or RNN/Brain
 - Executes fingerprints and/or procrusting comparison 
 - Preprocess average brain matrices over tasks 

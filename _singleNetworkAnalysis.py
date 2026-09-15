@@ -34,7 +34,6 @@ from tools import rule_name, load_pickle
 #  use _multipleNetworkAnalysis.py or _hyperparameterOverview.py (for preprocessing) instead
 
 '''
-Roles:
 - Plots train/test performance and cost for one defined model 
 - Computes and visualizes functional and structural (model weights) correlation matrices
 - Creates and visualizes task variance and lesioning plots - can compare subjects

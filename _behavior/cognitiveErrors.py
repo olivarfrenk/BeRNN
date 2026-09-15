@@ -33,7 +33,6 @@ import seaborn as sns
 from scipy.stats import gaussian_kde
 
 '''
-Roles:
 - Creates errorDistribution for each task individually (fine-grained is outdated)
 - Creates contingencyTable for each task individually
 - Creates task complexity x relative count plots

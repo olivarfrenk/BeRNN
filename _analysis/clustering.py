@@ -18,7 +18,6 @@ from network import get_perf
 from _analysis import variance
 
 '''
-Roles:
 - Analyzes how units are involved in tasks
 '''
 

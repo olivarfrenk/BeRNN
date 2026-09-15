@@ -8,6 +8,9 @@ from scipy.stats import mannwhitneyu
 import matplotlib.colors as mcolors
 import json
 
+'''
+- Visualizes reaction time of cognitive-behavioral tasks over months
+'''
 
 # Configuration
 participant_dir = r'W:\group_csp\analyses\oliver.frank\Data'

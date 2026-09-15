@@ -12,7 +12,6 @@ from collections import Counter
 import random
 
 '''
-Roles:
 - Preprocess the cogntive-behavioral data collected into the form that can be used to train the models
 '''
 

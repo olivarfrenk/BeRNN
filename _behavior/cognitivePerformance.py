@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
 '''
-Roles:
 - Evaluates monthly task performance for individual participant
 - Plots training effect showing change of pefromance over the whole data collection period
 - Plots training effect as boxplots

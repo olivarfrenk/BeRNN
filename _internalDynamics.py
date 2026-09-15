@@ -7,7 +7,6 @@ import pandas as pd
 import itertools
 
 '''
-Roles:
 - Tracks and plots internal dynamics (top. Marker) over defined number of models across subjects
 - Creates csv file with topological markers over time across subjects for consecutive LMM analysis (createCSV4LMM)
 '''

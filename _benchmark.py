@@ -9,7 +9,6 @@ from _training import get_default_hp
 from tools import rules_dict
 
 '''
-Roles: 
 - Creates benchmark dataset from Yang et al. (2019)
 - Saves benchmark dataset
 '''

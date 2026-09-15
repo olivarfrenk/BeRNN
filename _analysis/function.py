@@ -12,7 +12,6 @@ import tools
 from network import Model
 
 '''
-Roles:
 - Analyzes activity of all involved untis in network
 '''
 

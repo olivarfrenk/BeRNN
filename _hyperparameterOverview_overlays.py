@@ -16,7 +16,6 @@ import networkx as nx
 from _hyperparameterOverview import compute_n_cluster, get_n_clusters #, plot_vertical_hp_legend
 
 '''
-Roles: 
 - Creates grid search hp overview for several network sizes at once (standard)
 - Creates robustness hp overview for several network sizes at once (robustness)
 - Creates top. marker lists over models and saves as dicts for consecutive analysis 

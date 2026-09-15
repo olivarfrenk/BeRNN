@@ -21,7 +21,6 @@ from _training import apply_density_threshold
 from networkx.algorithms.community import greedy_modularity_communities, modularity
 
 '''
-Roles: 
 - Creates grid search hp overview for one network size 
 - Create histogramms for each hyperparameter seperatly
 - Evaluate top. Marker metrics for finding best hp for paper

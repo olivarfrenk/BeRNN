@@ -5,7 +5,6 @@ import os
 from scipy import stats
 
 '''
-Roles:
 - Manually created lists of external subject variables 
 - Executes explorative correlation analysis with external variables and topological markers over all subjects
 '''

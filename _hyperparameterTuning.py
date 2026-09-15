@@ -15,7 +15,6 @@ import _training
 import tools
 
 '''
-Roles: 
 - Random grid search of different hyperparameter sets 
 - Operates locally, on cluster (default) or on VM (hitkip_local)
 '''

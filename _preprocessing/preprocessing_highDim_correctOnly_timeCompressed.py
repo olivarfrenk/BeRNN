@@ -8,7 +8,6 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 '''
-Roles:
 - Preprocess the cogntive-behavioral data collected into the form that can be used to train the models
 '''
 

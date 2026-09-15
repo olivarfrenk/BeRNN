@@ -12,7 +12,6 @@ from nilearn.plotting import plot_stat_map
 from nilearn.glm import threshold_stats_img
 
 '''
-Roles:
 - Compute first level models for brain dataset using nilearn
 '''
 

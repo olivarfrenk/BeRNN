@@ -24,7 +24,6 @@ from _analysis import clustering
 from tools import load_hp, load_pickle, participation_coefficient
 
 '''
-Roles:
 - Compares brain/beRNN multiple models by correlation and/or RDA 
 - Preprocesses fMRI for RDA anaylsis (preprocess_fMRI2rdm)
 - Creates correlation matrices of correlation matrices for both network types

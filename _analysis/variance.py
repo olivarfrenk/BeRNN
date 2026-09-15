@@ -26,7 +26,6 @@ import tools
 save = True
 
 '''
-Roles:
 - Preprocesses functional hidden activity into various necessary representations for subsequent analysis 
 '''
 

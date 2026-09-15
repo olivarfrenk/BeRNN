@@ -12,7 +12,6 @@ import tools
 from network import Model
 
 '''
-Roles:
 - Analyzes structural connectivity in ANNs
 '''
 

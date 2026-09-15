@@ -9,7 +9,6 @@ import re
 from _analysis import clustering
 
 '''
-Roles:
 - Computes brain parcellations of global and subnetworks
 '''
 
