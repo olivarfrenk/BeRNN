@@ -1,0 +1,28 @@
+name: csp_frank_oliver_linux
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - numpy<2.0
+  - pandas
+  - matplotlib-base
+  - scipy
+  - scikit-learn
+  - networkx
+  - seaborn
+  - sqlalchemy
+  - flask
+  - alembic
+  - pyyaml
+  - tqdm
+  - pillow
+  - cloudpickle
+  - bcrypt
+  - tensorflow=2.10
+  - spacy=3.7.5
+  - mlflow
+  - pip:
+      - cryptography
+      - spacy-lookups-data
